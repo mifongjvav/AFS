@@ -14,5 +14,29 @@
     "link": "https://kn.codemao.cn/view/?workId=233953447",
     "linkText": "获取函数",
     "target": "_blank"
+  },
+  {
+    "title": "插值函数",
+    "icon": "fas fa-file",
+    "description": " <p>原作者：方圆圆</p><p>整合了6种插值函数，包括线性/n次/三角/弹跳（传参格式请编辑函数查看</p>",
+    "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part1.txt",
+    "linkText": "获取函数",
+    "target": "_blank"
+  },
+  {
+    "title": "血显特效",
+    "icon": "fas fa-file",
+    "description": " <p>原作者：方圆圆</p><p>在指定位置绘制一个血条</p>",
+    "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part2.txt",
+    "linkText": "获取函数",
+    "target": "_blank"
+  },
+  {
+    "title": "高精度三角函数",
+    "icon": "fas fa-file",
+    "description": " <p>原作者：方圆圆</p><p>提供18位精度的三角函数。注意，纯画笔和3d作品慎用！</p>",
+    "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part3.txt",
+    "linkText": "获取函数",
+    "target": "_blank"
   }
 ]
