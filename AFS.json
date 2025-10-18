@@ -2,7 +2,7 @@
   {
     "title": "LRCLite",
     "icon": "fas fa-thumb-tack",
-    "description": "测试",
+    "description": "LRCLite，一个简单的歌词引擎",
     "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/LRCLite.txt",
     "linkText": "获取函数",
     "target": "_blank"
