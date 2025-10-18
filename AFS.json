@@ -5,6 +5,6 @@
     description: "测试",
     link: "LRCLite.txt",
     linkText: "获取函数",
-    target: "_blank",
+    target: "_blank"
   }
 ]
