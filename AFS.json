@@ -1,10 +1,10 @@
 [
   {
-    title: "LRCLite",
-    icon: "fas fa-thumb-tack",
-    description: "测试",
-    link: "LRCLite.txt",
-    linkText: "获取函数",
-    target: "_blank"
+    "title": "LRCLite",
+    "icon": "fas fa-thumb-tack",
+    "description": "测试",
+    "link": "LRCLite.txt",
+    "linkText": "获取函数",
+    "target": "_blank"
   }
 ]
