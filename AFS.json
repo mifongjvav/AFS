@@ -1,9 +1,17 @@
 [
   {
     "title": "LRCLite",
-    "icon": "fas fa-thumb-tack",
+    "icon": "fas fa-file",
     "description": "LRCLite，一个简单的歌词引擎",
     "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/LRCLite.txt",
+    "linkText": "获取函数",
+    "target": "_blank"
+  },
+  {
+    "title": "星梦KN函数库",
+    "icon": "fas fa-file",
+    "description": " <p>原作者：旁观者JErS</p><p>包含列表排序、数据统计、几何计算、RSA加/解密、文本工具、颜色转换等76个实用函数。</p><p>部分函数来自其他函数库，在此对原作者进行感谢。</p>",
+    "link": "https://kn.codemao.cn/view/?workId=233953447",
     "linkText": "获取函数",
     "target": "_blank"
   }
