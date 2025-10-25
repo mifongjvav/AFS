@@ -38,5 +38,29 @@
     "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part3.txt",
     "linkText": "获取函数",
     "target": "_blank"
+  },
+  {
+    "title": "环形进度条",
+    "icon": "fas fa-file",
+    "description": " <p>原作者：方圆圆</p><p>非常实用的环形进度条</p>",
+    "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part4.txt",
+    "linkText": "获取函数",
+    "target": "_blank"
+  },
+  {
+    "title": "直线进度条",
+    "icon": "fas fa-file",
+    "description": " <p>原作者：方圆圆</p><p>非常实用的直线进度条</p>",
+    "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part5.txt",
+    "linkText": "获取函数",
+    "target": "_blank"
+  },
+  {
+    "title": "KittenN  3D Tirangle",
+    "icon": "fas fa-file",
+    "description": " <p>原作者：imaginary number</p><p>KittenN也要渲染3D三角形</p>",
+    "link": "https://kn.codemao.cn/view/?workId=252508272",
+    "linkText": "获取函数",
+    "target": "_blank"
   }
 ]
