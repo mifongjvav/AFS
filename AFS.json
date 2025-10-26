@@ -1,7 +1,7 @@
 [
   {
     "title": "LRCLite",
-    "icon": "fas fa-file",
+    "icon": "fas fa-music",
     "description": "LRCLite，一个简单的歌词引擎",
     "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/LRCLite.txt",
     "linkText": "获取函数",
@@ -9,7 +9,7 @@
   },
   {
     "title": "星梦KN函数库",
-    "icon": "fas fa-file",
+    "icon": "fas fa-file-zipper",
     "description": " <p>原作者：旁观者JErS</p><p>包含列表排序、数据统计、几何计算、RSA加/解密、文本工具、颜色转换等76个实用函数。</p><p>部分函数来自其他函数库，在此对原作者进行感谢。</p>",
     "link": "https://kn.codemao.cn/view/?workId=233953447",
     "linkText": "获取函数",
@@ -17,7 +17,7 @@
   },
   {
     "title": "插值函数",
-    "icon": "fas fa-file",
+    "icon": "fas fa-square-root-variable",
     "description": " <p>原作者：方圆圆</p><p>整合了6种插值函数，包括线性/n次/三角/弹跳（传参格式请编辑函数查看</p>",
     "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part1.txt",
     "linkText": "获取函数",
@@ -25,7 +25,7 @@
   },
   {
     "title": "血显特效",
-    "icon": "fas fa-file",
+    "icon": "fas fa-heart",
     "description": " <p>原作者：方圆圆</p><p>在指定位置绘制一个血条</p>",
     "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part2.txt",
     "linkText": "获取函数",
@@ -33,7 +33,7 @@
   },
   {
     "title": "高精度三角函数",
-    "icon": "fas fa-file",
+    "icon": "fas fa-calculator",
     "description": " <p>原作者：方圆圆</p><p>提供18位精度的三角函数。注意，纯画笔和3d作品慎用！</p>",
     "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part3.txt",
     "linkText": "获取函数",
@@ -41,7 +41,7 @@
   },
   {
     "title": "环形进度条",
-    "icon": "fas fa-file",
+    "icon": "fas fa-spinner",
     "description": " <p>原作者：方圆圆</p><p>非常实用的环形进度条</p>",
     "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part4.txt",
     "linkText": "获取函数",
@@ -49,7 +49,7 @@
   },
   {
     "title": "直线进度条",
-    "icon": "fas fa-file",
+    "icon": "fas fa-spinner",
     "description": " <p>原作者：方圆圆</p><p>非常实用的直线进度条</p>",
     "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part5.txt",
     "linkText": "获取函数",
@@ -57,7 +57,7 @@
   },
   {
     "title": "KittenN  3D Tirangle",
-    "icon": "fas fa-file",
+    "icon": "fas fa-cube",
     "description": " <p>原作者：imaginary number</p><p>KittenN也要渲染3D三角形</p>",
     "link": "https://kn.codemao.cn/view/?workId=252508272",
     "linkText": "获取函数",
