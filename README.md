@@ -72,7 +72,7 @@ git pull
   "link": "https://kn.codemao.cn/view/?workId=252508272",
   "linkText": "获取函数",
   "target": "_blank"
-  }
+}
 ```
 
 > [!NOTE]
