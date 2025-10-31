@@ -4,7 +4,7 @@
 
 # Argon Function Station
 
-![GitHub last commit](https://img.shields.io/github/last-commit/mifongjvav/AFS?display_timestamp=committer) ![GitHub Repo stars](https://img.shields.io/github/stars/mifongjvav/AFS) ![GitHub forks](https://img.shields.io/github/forks/mifongjvav/AFS) ![GitHub License](https://img.shields.io/github/license/mifongjvav/AFS)
+![GitHub last commit](https://img.shields.io/github/last-commit/mifongjvav/AFS?display_timestamp=committer) ![GitHub Repo stars](https://img.shields.io/github/stars/mifongjvav/AFS) ![GitHub forks](https://img.shields.io/github/forks/mifongjvav/AFS) ![GitHub commit activity](https://img.shields.io/github/commit-activity/t/mifongjvav/AFS)
 
 一个普普通通的站点。寻找需要的函数没那么麻烦！
 
