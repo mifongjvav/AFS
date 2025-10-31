@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="500" alt="osu! logo" src="/AFS.png">
+  <img width="500" src="/AFS.png">
 </p>
 
 # Argon Function Station
@@ -72,7 +72,7 @@ git pull
   "link": "https://kn.codemao.cn/view/?workId=252508272",
   "linkText": "获取函数",
   "target": "_blank"
-  }
+}
 ```
 
 > [!NOTE]
@@ -96,4 +96,4 @@ git pull
 
 AFS 提供的的函数默认根据 MIT 许可证进行许可。更多信息请参阅许可证文件 。[tl;dr](https://tldrlegal.com/license/mit-license) 只要在任何作品/源代码的副本中包含原始版权和许可证声明，你可以做任何你想做的事情。
 
-如果你的函数需要使用其它许可证进行开源，请在简介标明。
+如果你的函数需要使用其它许可证进行许可，请在简介标明。
