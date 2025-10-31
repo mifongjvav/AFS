@@ -77,9 +77,9 @@ git pull
 
 > [!NOTE]
 > 你应该在最后一个`}`那插入一个英文的`,`（注意不是中文的`，`）来保证格式正确。
-
+>
 > 键`icon`的值可以在[Font Awesome 图标页面](https://fontawesome.com/search?f=classic&s=solid&o=r)来查找。
-
+>
 > 点击一个适合的图标，点击右边的html，粘贴到键`icon`值的输入位置，删除没用内容直到只有`fa-solid fa-图标名称`，把`fa-solid`替换为`fas`。
 
 ### 代码审查
