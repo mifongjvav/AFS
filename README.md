@@ -2,9 +2,9 @@
   <img width="500" alt="osu! logo" src="/AFS.png">
 </p>
 
-![GitHub last commit](https://img.shields.io/github/last-commit/mifongjvav/AFS?display_timestamp=committer) ![GitHub Repo stars](https://img.shields.io/github/stars/mifongjvav/AFS) ![GitHub forks](https://img.shields.io/github/forks/mifongjvav/AFS) ![GitHub License](https://img.shields.io/github/license/mifongjvav/AFS)
-
 # Argon Function Station
+
+![GitHub last commit](https://img.shields.io/github/last-commit/mifongjvav/AFS?display_timestamp=committer) ![GitHub Repo stars](https://img.shields.io/github/stars/mifongjvav/AFS) ![GitHub forks](https://img.shields.io/github/forks/mifongjvav/AFS) ![GitHub License](https://img.shields.io/github/license/mifongjvav/AFS)
 
 一个普普通通的站点。寻找需要的函数没那么麻烦！
 
@@ -43,7 +43,7 @@
 
 - 拥有一个Github账户
 
-在处理代码库时，我们建议使用具有智能代码补全和语法高亮的 IDE，例如最新版本的 Visual Studio、Visual Studio Code。
+在处理存储库时，我们建议使用具有智能代码补全和语法高亮的 IDE，例如最新版本的Visual Studio Code。
 
 ### 下载源代码
 
@@ -80,4 +80,4 @@ git pull
 ```
 
 > [!NOTE]
-> 
+> 你应该在最后一个`}`那插入一个`,`来保证格式正确
