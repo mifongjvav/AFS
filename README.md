@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="500" alt="osu! logo" src="AFS.png">
+  <img width="500" alt="osu! logo" src="/AFS.png">
 </p>
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/mifongjvav/AFS?display_timestamp=committer) ![GitHub Repo stars](https://img.shields.io/github/stars/mifongjvav/AFS) ![GitHub forks](https://img.shields.io/github/forks/mifongjvav/AFS) ![GitHub License](https://img.shields.io/github/license/mifongjvav/AFS)
@@ -79,5 +79,5 @@ git pull
   }
 ```
 
-> [!注意]
+> [!NOTE]
 > 
