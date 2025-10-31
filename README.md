@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="500" alt="osu! logo" src="/AFS.png">
+  <img width="500" src="/AFS.png">
 </p>
 
 # Argon Function Station
