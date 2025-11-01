@@ -8,6 +8,8 @@
 
 ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/mifongjvav/AFS) ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues-closed/mifongjvav/AFS) ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues-pr/mifongjvav/AFS) ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues-pr-closed/mifongjvav/AFS)
 
+---
+
 一个普普通通的站点。寻找需要的函数没那么麻烦！
 
 ## 状态
