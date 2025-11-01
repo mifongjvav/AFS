@@ -6,6 +6,8 @@
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/mifongjvav/AFS?display_timestamp=committer) ![GitHub Repo stars](https://img.shields.io/github/stars/mifongjvav/AFS) ![GitHub forks](https://img.shields.io/github/forks/mifongjvav/AFS) ![GitHub commit activity](https://img.shields.io/github/commit-activity/t/mifongjvav/AFS)
 
+![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/mifongjvav/AFS) ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues-closed/mifongjvav/AFS) ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues-pr/mifongjvav/AFS) ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues-pr-closed/mifongjvav/AFS)
+
 一个普普通通的站点。寻找需要的函数没那么麻烦！
 
 ## 状态
@@ -64,7 +66,7 @@ cd AFS
 git pull
 ```
 
-### 开发
+### 更改
 
 启动你的 IDE。
 
@@ -108,6 +110,16 @@ git pull
 > 加QQ`3925593161`来获得报酬
 
 如果你有任何问题，在做之前，请随时联系 Argon。
+
+## 提交拉取请求
+
+转到`https://github.com/mifongjvav/AFS/compare`，点击`compare across forks`（`跨分支比较`）。
+
+点击`head repository`，选择为你的分支，点击`Create pull request`（`创建拉取请求`）。
+
+输入标题和描述，再次点击点击`Create pull request`（`创建拉取请求`）。
+
+等待合并...
 
 ## 赞助
 
