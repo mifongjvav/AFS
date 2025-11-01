@@ -98,6 +98,16 @@ git pull
 
 在提交代码之前，请右键点击 `格式化文档` ，并且按下 `Ctrl+S` 来保存代码，这是必须的。
 
+### 提交拉取请求
+
+转到`https://github.com/mifongjvav/AFS/compare`，点击`compare across forks`（`跨分支比较`）。
+
+点击`head repository`，选择为你的分支，点击`Create pull request`（`创建拉取请求`）。
+
+输入标题和描述，再次点击点击`Create pull request`（`创建拉取请求`）。
+
+等待合并...
+
 ## 贡献
 
 在为项目做贡献方面，你可以做的两件主要事情来提供帮助的是报告函数的问题和提交函数。
@@ -110,16 +120,6 @@ git pull
 > 加QQ`3925593161`来获得报酬
 
 如果你有任何问题，在做之前，请随时联系 Argon。
-
-## 提交拉取请求
-
-转到`https://github.com/mifongjvav/AFS/compare`，点击`compare across forks`（`跨分支比较`）。
-
-点击`head repository`，选择为你的分支，点击`Create pull request`（`创建拉取请求`）。
-
-输入标题和描述，再次点击点击`Create pull request`（`创建拉取请求`）。
-
-等待合并...
 
 ## 赞助
 
