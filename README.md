@@ -22,6 +22,14 @@
 
 ## 提交函数
 
+### 先决条件
+
+你需要保证你的函数有满足以下几点要求：
+
+- 拥有至少5个有效积木
+- 不存在重复执行里塞一步执行这种造成严重卡顿的积木
+- 空作品运行时能达到至少25FPS
+
 ### 通过作者
 
 如果你什么都不会，加QQ
@@ -69,7 +77,7 @@ git pull
   "title": "标题",
   "icon": "fas fa-file",
   "description": "<p>原作者：你的名字</p><p>描述</p>",
-  "link": "https://kn.codemao.cn/view/?workId=252508272",
+  "link": "url",
   "linkText": "获取函数",
   "target": "_blank"
 }
@@ -81,10 +89,12 @@ git pull
 > 键`icon`的值可以在[Font Awesome 图标页面](https://fontawesome.com/search?f=classic&s=solid&o=r)来查找。
 >
 > 点击一个适合的图标，点击右边的html，粘贴到键`icon`值的输入位置，删除没用内容直到只有`fa-solid fa-图标名称`，把`fa-solid`替换为`fas`。
+>
+> 如果你需要设置仓库内的url，请创建文件，名字请随意。并且将`https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/文件名.扩展名`粘贴到键`link`值的输入位置。
 
 ### 代码审查
 
-在提交代码之前，请右键点击`格式化文档`，并且按下Ctrl+S来保存代码。
+在提交代码之前，请右键点击 `格式化文档` ，并且按下 `Ctrl+S` 来保存代码，这是必须的。
 
 ## 贡献
 
