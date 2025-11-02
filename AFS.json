@@ -63,15 +63,23 @@
     "linkText": "获取函数",
     "type": "copy"
   },
+    {
+    "title": "双曲线函数",
+    "icon": "fas fa-2",
+    "description": " <p>原作者：方圆圆</p><p>更强大的双曲线三角函数</p>",
+    "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part7.txt",
+    "linkText": "获取函数",
+    "type": "copy"
+  },
   {
-    "title": "KittenN  3D Tirangle",
+    "title": "KittenN  3D Triangle",
     "icon": "fas fa-cube",
     "description": " <p>原作者：imaginary number</p><p>KittenN也要渲染3D三角形</p>",
     "link": "https://kn.codemao.cn/view/?workId=252508272",
     "linkText": "获取作品",
     "type": "jump"
   },
-    {
+  {
     "title": "VE for Kitten N",
     "icon": "fas fa-cube",
     "description": " <p>原作者：imaginary number</p><p>KittenN也要VE</p>",
@@ -80,9 +88,17 @@
     "type": "jump"
   },
   {
+    "title": "VertezForge Engine 4",
+    "icon": "fas fa-cube",
+    "description": " <p>原作者：imaginary number</p><p>这是一个里程碑....</p><p>它代表着猫站矢量3D的最高境界......</p><p>同时也代表着矢量3D的开发已经成熟了......</p><p>没有人，能达到它的水平.......</p><p>R.I.P</p><a href='https://shequ.codemao.cn/community/1637503' target='_blank'>使用教程</a><p>此为Kitten 3作品</p>",
+    "link": "https://shequ.codemao.cn/work/278330115",
+    "linkText": "获取作品",
+    "type": "jump"
+  },
+  {
     "title": "砖的函数库",
     "icon": "fas fa-cube",
-    "description": " <p>原作者：Zhuan_</p><p>支持缩放和旋转的摄像头 字符串 坐标相关计算 和杂项</p><p>此为Kitten 4函数</p>",
+    "description": " <p>原作者：Zhuan_</p><p>支持缩放和旋转的摄像头 字符串 坐标相关计算 和杂项</p><p>此为Kitten 4作品</p>",
     "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/ation.bcm4",
     "linkText": "下载作品",
     "type": "download"
