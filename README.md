@@ -83,12 +83,14 @@ git pull
   "description": "<p>原作者：你的名字</p><p>描述</p>",
   "link": "url",
   "linkText": "获取函数",
-  "target": "_blank"
+  "type": "类型"
 }
 ```
 
 > [!NOTE]
 > 你应该在最后一个`}`那插入一个英文的`,`（注意不是中文的`，`）来保证格式正确。
+>
+> 键`type`的值可为jump、copy或download，顾名思义，分别是跳转、复制和下载。
 >
 > 键`icon`的值可以在[Font Awesome 图标页面](https://fontawesome.com/search?f=classic&s=solid&o=r)来查找。
 >
