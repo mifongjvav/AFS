@@ -63,13 +63,21 @@
     "linkText": "获取函数",
     "type": "copy"
   },
-    {
+  {
     "title": "双曲线函数",
     "icon": "fas fa-2",
     "description": " <p>原作者：方圆圆</p><p>更强大的双曲线三角函数</p>",
     "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part7.txt",
     "linkText": "获取函数",
     "type": "copy"
+  },
+    {
+    "title": "方圆圆函数库合集",
+    "icon": "fas fa-cube",
+    "description": " <p>原作者：方圆圆</p><p>就是合集而已，函数以后这里更新哦</p>",
+    "link": "https://shequ.codemao.cn/work/289701127",
+    "linkText": "获取作品",
+    "type": "jump"
   },
   {
     "title": "KittenN  3D Triangle",
@@ -102,5 +110,13 @@
     "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/ation.bcm4",
     "linkText": "下载作品",
     "type": "download"
+  },
+    {
+    "title": "CCB的列表打乱",
+    "icon": "fas fa-cube",
+    "description": " <p>原作者：CCB</p><p>还不错？</p>",
+    "link": "https://shequ.codemao.cn/work/289798270",
+    "linkText": "获取作品",
+    "type": "jump"
   }
 ]
