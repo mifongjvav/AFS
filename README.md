@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="500" src="/AFS.png">
+  <img width="500" src="https://s21.ax1x.com/2025/11/02/pVzTKN8.png">
 </p>
 
 # Argon Function Station
