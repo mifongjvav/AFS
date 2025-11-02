@@ -56,6 +56,14 @@
     "target": "_blank"
   },
   {
+    "title": "字符串函数",
+    "icon": "fas fa-s",
+    "description": " <p>原作者：方圆圆</p><p>享受更强大的字符串编辑功能</p>",
+    "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part6.txt",
+    "linkText": "获取函数",
+    "target": "_blank"
+  },
+  {
     "title": "KittenN  3D Tirangle",
     "icon": "fas fa-cube",
     "description": " <p>原作者：imaginary number</p><p>KittenN也要渲染3D三角形</p>",
