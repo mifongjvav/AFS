@@ -5,7 +5,11 @@
     "description": "<p>原作者：Argon</p><p>LRCLite，一个简单的歌词引擎</p><p>许可证：CC BY-NC-SA 4.0</p>",
     "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/LRCLite.txt",
     "linkText": "获取函数",
-    "type": "copy"
+    "type": "copy",
+    "class": [
+      "工具",
+      "音频"
+    ]
   },
   {
     "title": "星梦KN函数库",
@@ -13,7 +17,11 @@
     "description": " <p>原作者：旁观者JErS</p><p>包含列表排序、数据统计、几何计算、RSA加/解密、文本工具、颜色转换等76个实用函数。</p><p>部分函数来自其他函数库，在此对原作者进行感谢。</p>",
     "link": "https://kn.codemao.cn/view/?workId=233953447",
     "linkText": "获取函数",
-    "type": "jump"
+    "type": "jump",
+    "class": [
+      "通用",
+      "算法"
+    ]
   },
   {
     "title": "插值函数",
@@ -21,7 +29,11 @@
     "description": " <p>原作者：方圆圆</p><p>整合了6种插值函数，包括线性/n次/三角/弹跳（传参格式请编辑函数查看）</p>",
     "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part1.txt",
     "linkText": "获取函数",
-    "type": "copy"
+    "type": "copy",
+    "class": [
+      "数学",
+      "动画"
+    ]
   },
   {
     "title": "血显特效",
@@ -29,7 +41,11 @@
     "description": " <p>原作者：方圆圆</p><p>在指定位置绘制一个血条</p>",
     "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part2.txt",
     "linkText": "获取函数",
-    "type": "copy"
+    "type": "copy",
+    "class": [
+      "特效",
+      "UI"
+    ]
   },
   {
     "title": "高精度三角函数",
@@ -37,7 +53,10 @@
     "description": " <p>原作者：方圆圆</p><p>提供18位精度的三角函数。注意，纯画笔和3d作品慎用！</p>",
     "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part3.txt",
     "linkText": "获取函数",
-    "type": "copy"
+    "type": "copy",
+    "class": [
+      "数学"
+    ]
   },
   {
     "title": "环形进度条",
@@ -45,7 +64,11 @@
     "description": " <p>原作者：方圆圆</p><p>非常实用的环形进度条</p>",
     "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part4.txt",
     "linkText": "获取函数",
-    "type": "copy"
+    "type": "copy",
+    "class": [
+      "UI",
+      "特效"
+    ]
   },
   {
     "title": "直线进度条",
@@ -53,7 +76,11 @@
     "description": " <p>原作者：方圆圆</p><p>非常实用的直线进度条</p>",
     "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part5.txt",
     "linkText": "获取函数",
-    "type": "copy"
+    "type": "copy",
+    "class": [
+      "UI",
+      "特效"
+    ]
   },
   {
     "title": "字符串函数",
@@ -61,7 +88,11 @@
     "description": " <p>原作者：方圆圆</p><p>享受更强大的字符串编辑功能</p>",
     "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part6.txt",
     "linkText": "获取函数",
-    "type": "copy"
+    "type": "copy",
+    "class": [
+      "工具",
+      "文本"
+    ]
   },
   {
     "title": "双曲线函数",
@@ -69,7 +100,10 @@
     "description": " <p>原作者：方圆圆</p><p>更强大的双曲线三角函数</p>",
     "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part7.txt",
     "linkText": "获取函数",
-    "type": "copy"
+    "type": "copy",
+    "class": [
+      "数学"
+    ]
   },
   {
     "title": "方圆圆函数库合集",
@@ -77,7 +111,11 @@
     "description": " <p>原作者：方圆圆</p><p>就是合集而已，函数以后这里更新哦</p>",
     "link": "https://shequ.codemao.cn/work/289701127",
     "linkText": "获取作品",
-    "type": "jump"
+    "type": "jump",
+    "class": [
+      "函数库",
+      "综合"
+    ]
   },
   {
     "title": "KittenN  3D Triangle",
@@ -85,7 +123,11 @@
     "description": " <p>原作者：imaginary number</p><p>KittenN也要渲染3D三角形</p>",
     "link": "https://kn.codemao.cn/view/?workId=252508272",
     "linkText": "获取作品",
-    "type": "jump"
+    "type": "jump",
+    "class": [
+      "3D",
+      "渲染"
+    ]
   },
   {
     "title": "VE for Kitten N",
@@ -93,7 +135,11 @@
     "description": " <p>原作者：imaginary number</p><p>KittenN也要VE</p>",
     "link": "https://kn.codemao.cn/view/?workId=275603664",
     "linkText": "获取作品",
-    "type": "jump"
+    "type": "jump",
+    "class": [
+      "3D",
+      "引擎"
+    ]
   },
   {
     "title": "VertezForge Engine 4",
@@ -101,7 +147,11 @@
     "description": " <p>原作者：imaginary number</p><p>这是一个里程碑....</p><p>它代表着猫站矢量3D的最高境界......</p><p>同时也代表着矢量3D的开发已经成熟了......</p><p>没有人，能达到它的水平.......</p><a href='https://shequ.codemao.cn/community/1637503' target='_blank'>🤔使用教程</a><p>此为Kitten 3作品</p>",
     "link": "https://shequ.codemao.cn/work/278330115",
     "linkText": "获取作品",
-    "type": "jump"
+    "type": "jump",
+    "class": [
+      "3D",
+      "引擎"
+    ]
   },
   {
     "title": "砖的函数库",
@@ -109,7 +159,12 @@
     "description": " <p>原作者：Zhuan_</p><p>支持缩放和旋转的摄像头 字符串 坐标相关计算 和杂项</p><p>此为Kitten 4作品</p>",
     "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/ation.bcm4",
     "linkText": "下载作品",
-    "type": "download"
+    "type": "download",
+    "class": [
+      "函数库",
+      "工具",
+      "3D"
+    ]
   },
   {
     "title": "CCB的列表打乱",
@@ -117,6 +172,10 @@
     "description": " <p>原作者：CCB</p><p>还不错？</p>",
     "link": "https://shequ.codemao.cn/work/289798270",
     "linkText": "获取作品",
-    "type": "jump"
+    "type": "jump",
+    "class": [
+      "算法",
+      "工具"
+    ]
   }
 ]
