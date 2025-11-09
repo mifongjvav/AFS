@@ -177,5 +177,17 @@
       "算法",
       "工具"
     ]
+  },
+    {
+    "title": "窗口绘制",
+    "icon": "fas fa-list",
+    "description": " <p>原作者：BKS_Limo</p><p>画窗口用的（）</p>",
+    "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/窗口绘制.txt",
+    "linkText": "获取函数",
+    "type": "copy",
+    "class": [
+      "UI",
+      "工具"
+    ]
   }
 ]
