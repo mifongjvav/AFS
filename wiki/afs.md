@@ -1,6 +1,6 @@
-# This is Argon Wiki Station.
+# This is Argon Function Station V2.
 
-欢迎提交新的教程
+持续收录更多函数中...
 
 链接：
 
