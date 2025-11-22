@@ -20,13 +20,13 @@
 
 ## 访问
 
-|AFS总站|
-|--|
-|<https://argon-fs.pages.dev/>|
+|AFS总站|AFS镜像站|
+|--|--|
+|<https://argon-fs.pages.dev/>|<https://mifongjvav.dpdns.org//>|
 
 ## 提交函数
 
-### 先决条件
+### 函数条件
 
 你需要保证你的函数有满足以下几点要求：
 
