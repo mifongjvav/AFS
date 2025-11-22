@@ -145,7 +145,7 @@ AFS 提供的的函数默认根据 MIT 许可证进行许可。更多信息请�
 |hhcl233|
 |--|
 
-### 函数贡献
+### 函数/教程贡献
 
-|旁观者JErS|方圆圆|imaginary number|
-|--|--|--|
+|旁观者JErS|方圆圆|imaginary number|Zhuan_|BKS_Limo|CCB|白颜料|
+|--|--|--|--|--|--|--|
