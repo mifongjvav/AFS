@@ -1,14 +1,14 @@
 [
   {
-    "title": "LRCLite",
+    "title": "LyricsLite",
     "icon": "fas fa-music",
-    "description": "<p>原作者：Argon</p><p>LRCLite，一个简单的歌词引擎</p><p>许可证：CC BY-NC-SA 4.0</p>",
-    "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/LRCLite.txt",
+    "description": "<p>原作者：Argon</p><p>LyricsLite，一个简单的歌词引擎</p><p>许可证：CC BY-NC-SA 4.0</p>",
+    "link": "https://kn.codemao.cn/view/?workId=277442627",
     "linkText": "获取函数",
-    "type": "copy",
+    "type": "jump",
     "class": [
       "工具",
-      "音频"
+      "歌词"
     ]
   },
   {
