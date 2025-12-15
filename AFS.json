@@ -107,6 +107,29 @@
     ]
   },
   {
+    "title": "KN填充三角形",
+    "icon": "fas fa-caret-up",
+    "description": " <p>原作者：方圆圆</p><p>666三角形彩色填充</p>",
+    "link": "https://kn.codemao.cn/view/?workId=296594007",
+    "linkText": "获取作品",
+    "type": "jump",
+    "class": [
+      "3D",
+      "渲染"
+    ]
+  },
+  {
+    "title": "检测在线人数",
+    "icon": "fas fa-person",
+    "description": " <p>原作者：方圆圆</p><p>支持显示历史上线人数等，上限100人，KN限制不可改</p>",
+    "link": "https://kn.codemao.cn/view/?workId=295906404",
+    "linkText": "获取作品",
+    "type": "jump",
+    "class": [
+      "联机"
+    ]
+  },
+  {
     "title": "方圆圆函数库合集",
     "icon": "fas fa-file-zipper",
     "description": " <p>原作者：方圆圆</p><p>就是合集而已，函数以后这里更新哦</p>",
