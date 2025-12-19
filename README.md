@@ -141,3 +141,9 @@ AFS 提供的的函数默认根据 MIT 许可证进行许可。更多信息请�
 
 |旁观者JErS|方圆圆|imaginary number|Zhuan_|BKS_Limo|CCB|白颜料|
 |--|--|--|--|--|--|--|
+
+## GitHub 贡献者（仅通过Pull Request提交函数的贡献者）
+
+<a href="https://github.com/mifongjvav/AFS/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=mifongjvav/AFS" />
+</a>
