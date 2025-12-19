@@ -22,17 +22,9 @@
 
 |AFS总站|AFS镜像站|
 |--|--|
-|<https://argon-fs.pages.dev/>|<https://mifongjvav.dpdns.org//>|
+|<https://afs-web.pages.dev/>|<https://mifongjvav.dpdns.org//>|
 
 ## 提交函数
-
-### 函数条件
-
-你需要保证你的函数有满足以下几点要求：
-
-- 函数积木都有实际用处
-- 屎山足够少
-- 空作品运行时能达到至少25FPS
 
 ### 通过作者
 
