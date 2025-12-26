@@ -254,5 +254,16 @@
       "黄油",
       "上架"
     ]
+  },
+    {
+    "title": "测试",
+    "icon": "fas fa-1",
+    "description": " <p>测试</p>",
+    "link": "#",
+    "linkText": "测试",
+    "type": "jump",
+    "class": [
+      "测试"
+    ]
   }
 ]
