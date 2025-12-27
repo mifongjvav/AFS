@@ -22,35 +22,35 @@ jobs:
             const issue = context.payload.issue;
             const issueNumber = issue.number;
 
-            // 只处理标题严格为 [提交请求]
-            if ((issue.title || '').trim() !== '[提交请求]') {
-              core.info('Not a submit issue, skip.');
-              return;
-            }
+            // 仅处理 [提交请求]
+            if ((issue.title || '').trim() !== '[提交请求]') return;
 
             const body = issue.body || '';
 
-            // 提取 [提交请求] 与 [END] 之间的内容
+            // 提取内容块
             let block = body;
-            const start = body.indexOf('[提交请求]');
-            const end = body.indexOf('[END]');
-            if (start !== -1 && end !== -1 && end > start) {
-              block = body.slice(start + 6, end);
+            const s = body.indexOf('[提交请求]');
+            const e = body.indexOf('[END]');
+            if (s !== -1 && e !== -1 && e > s) {
+              block = body.slice(s + '[提交请求]'.length, e);
             }
 
-            // 解析“键：值”
-            const lines = block.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+            // 解析 键：值（支持中文 / 英文冒号）
             const kv = {};
-            for (const line of lines) {
-              let idx = line.indexOf('：');
-              if (idx === -1) idx = line.indexOf(':');
-              if (idx > -1) {
-                const k = line.slice(0, idx).trim();
-                const v = line.slice(idx + 1).trim();
-                if (k) kv[k] = v;
-              }
-            }
+            block.split(/\r?\n/)
+              .map(l => l.trim())
+              .filter(Boolean)
+              .forEach(line => {
+                let i = line.indexOf('：');
+                if (i === -1) i = line.indexOf(':');
+                if (i > -1) {
+                  const k = line.slice(0, i).trim();
+                  const v = line.slice(i + 1).trim();
+                  kv[k] = v;
+                }
+              });
 
+            // 同时支持 带括号 / 不带括号 键名
             const pick = (...keys) => {
               for (const k of keys) {
                 if (kv[k] !== undefined) return kv[k].trim();
@@ -58,15 +58,27 @@ jobs:
               return '';
             };
 
-            // 读取字段
-            const title = pick('标题', 'title');
+            // 字段读取（兼容括号说明）
+            const title = pick('标题');
             const desc = pick('简介', '描述', 'description');
             const link = pick('链接地址', '链接', 'link');
-            const type = pick('获取方式', 'type');
-            const icon = pick('FontAwesome icon（留空为默认，格式为fas fa-图标名称）', 'icon');
+            const type = pick(
+              '获取方式',
+              '获取方式（jump | copy | download）',
+              'type'
+            );
+            const icon = pick(
+              'FontAwesome icon（留空为默认，格式为fas fa-图标名称）',
+              'icon'
+            );
             const author = pick('作者', '原作者', 'author');
             const linkText = pick('获取按钮昵称', '获取按钮', 'linkText');
-            const tags = pick('标签（多个标签用英文逗号分隔）', '标签', 'class', 'tags');
+            const tags = pick(
+              '标签（多个标签用英文逗号分隔）',
+              '标签',
+              'class',
+              'tags'
+            );
 
             // ===== 严格校验 =====
             const errors = [];
@@ -80,9 +92,8 @@ jobs:
               errors.push(`获取方式必须是 jump / copy / download（当前：${type}）`);
             }
 
-            // 校验失败 → 打 invalid 标签 + 评论
+            // 校验失败 → invalid 标签 + 评论
             if (errors.length > 0) {
-              // 添加 invalid 标签（若不存在）
               const labels = issue.labels.map(l => l.name);
               if (!labels.includes('invalid')) {
                 await github.rest.issues.addLabels({
@@ -93,59 +104,43 @@ jobs:
                 });
               }
 
-              const msg = [
-                '❌ **提交内容校验失败**，发现以下问题：',
-                '',
-                ...errors.map((e, i) => `${i + 1}. ${e}`),
-                '',
-                '请修改 issue 内容后保存，系统会自动重新校验。',
-                '',
-                '参考格式：',
-                '```',
-                '[提交请求]',
-                '标题：示例标题',
-                '简介：这是一个示例简介',
-                '链接地址：https://example.com',
-                '获取方式：download',
-                '标签：工具,网络',
-                '[END]',
-                '```'
-              ].join('\n');
-
               await github.rest.issues.createComment({
                 owner,
                 repo,
                 issue_number: issueNumber,
-                body: msg
+                body: [
+                  '❌ **提交内容校验失败**',
+                  '',
+                  ...errors.map((e,i)=>`${i+1}. ${e}`),
+                  '',
+                  '✅ **合法示例格式（支持括号说明）**：',
+                  '```',
+                  '[提交请求]',
+                  '标题：示例标题',
+                  '简介：这是一个示例简介（支持 Windows / Linux）',
+                  '链接地址：https://example.com',
+                  '获取方式（jump | copy | download）：download',
+                  '获取按钮昵称：立即获取',
+                  '标签（多个标签用英文逗号分隔）：工具,网络',
+                  '[END]',
+                  '```'
+                ].join('\n')
               });
-
-              core.info('Validation failed.');
               return;
             }
 
             // ===== 校验通过 =====
-
-            // 移除 invalid 和黑名单标签
             const forbidden = ['invalid', '坟场', '制作中', '待定', '过审', '上架', '用户喜爱'];
-            const cleanLabels = issue.labels
-              .map(l => l.name)
-              .filter(l => !forbidden.includes(l));
-
             await github.rest.issues.update({
               owner,
               repo,
               issue_number: issueNumber,
-              labels: cleanLabels
+              labels: issue.labels.map(l=>l.name).filter(l=>!forbidden.includes(l))
             });
 
-            // 处理标签字段
-            let classes = [];
-            if (tags) {
-              classes = tags
-                .split(',')
-                .map(t => t.trim())
-                .filter(Boolean);
-            }
+            const classes = tags
+              ? tags.split(',').map(t=>t.trim()).filter(Boolean)
+              : [];
 
             const result = {
               title,
@@ -157,19 +152,14 @@ jobs:
               class: classes
             };
 
-            const comment = [
-              `✅ 提交校验通过，已生成 JSON（@${owner}）：`,
-              '',
-              '```json',
-              JSON.stringify(result, null, 2),
-              '```'
-            ].join('\n');
-
             await github.rest.issues.createComment({
               owner,
               repo,
               issue_number: issueNumber,
-              body: comment
+              body: [
+                `✅ 提交校验通过，生成 JSON（@${owner}）：`,
+                '```json',
+                JSON.stringify(result, null, 2),
+                '```'
+              ].join('\n')
             });
-
-            core.info('Done.');
