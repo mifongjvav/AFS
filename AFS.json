@@ -30,7 +30,7 @@
     "title": "插值函数",
     "icon": "fas fa-square-root-variable",
     "description": " <p>原作者：方圆圆</p><p>整合了6种插值函数，包括线性/n次/三角/弹跳（传参格式请编辑函数查看）</p>",
-    "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part1.txt",
+    "link": "https://raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part1.txt",
     "linkText": "获取函数",
     "type": "copy",
     "class": [
@@ -43,7 +43,7 @@
     "title": "血显特效",
     "icon": "fas fa-heart",
     "description": " <p>原作者：方圆圆</p><p>在指定位置绘制一个血条</p>",
-    "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part2.txt",
+    "link": "https://raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part2.txt",
     "linkText": "获取函数",
     "type": "copy",
     "class": [
@@ -56,7 +56,7 @@
     "title": "高精度三角函数",
     "icon": "fas fa-calculator",
     "description": " <p>原作者：方圆圆</p><p>提供18位精度的三角函数。注意，纯画笔和3d作品慎用！</p>",
-    "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part3.txt",
+    "link": "https://raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part3.txt",
     "linkText": "获取函数",
     "type": "copy",
     "class": [
@@ -68,7 +68,7 @@
     "title": "环形进度条",
     "icon": "fas fa-spinner",
     "description": " <p>原作者：方圆圆</p><p>非常实用的环形进度条</p>",
-    "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part4.txt",
+    "link": "https://raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part4.txt",
     "linkText": "获取函数",
     "type": "copy",
     "class": [
@@ -81,7 +81,7 @@
     "title": "直线进度条",
     "icon": "fas fa-spinner",
     "description": " <p>原作者：方圆圆</p><p>非常实用的直线进度条</p>",
-    "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part5.txt",
+    "link": "https://raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part5.txt",
     "linkText": "获取函数",
     "type": "copy",
     "class": [
@@ -94,7 +94,7 @@
     "title": "字符串函数",
     "icon": "fas fa-s",
     "description": " <p>原作者：方圆圆</p><p>享受更强大的字符串编辑功能</p>",
-    "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part6.txt",
+    "link": "https://raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part6.txt",
     "linkText": "获取函数",
     "type": "copy",
     "class": [
@@ -107,7 +107,7 @@
     "title": "双曲线函数",
     "icon": "fas fa-2",
     "description": " <p>原作者：方圆圆</p><p>更强大的双曲线三角函数</p>",
-    "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part7.txt",
+    "link": "https://raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/scc-part7.txt",
     "linkText": "获取函数",
     "type": "copy",
     "class": [
@@ -196,7 +196,7 @@
     "title": "砖的函数库",
     "icon": "fas fa-cube",
     "description": " <p>原作者：Zhuan_</p><p>支持缩放和旋转的摄像头 字符串 坐标相关计算 和杂项</p><p>此为Kitten 4作品</p>",
-    "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/ation.bcm4",
+    "link": "https://raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/ation.bcm4",
     "linkText": "下载作品",
     "type": "download",
     "class": [
@@ -222,7 +222,7 @@
     "title": "窗口绘制",
     "icon": "fas fa-window-restore",
     "description": " <p>原作者：BKS_Limo</p><p>画窗口用的（）</p>",
-    "link": "https://hub.gitmirror.com/raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/窗口绘制.txt",
+    "link": "https://raw.githubusercontent.com/mifongjvav/AFS/refs/heads/main/窗口绘制.txt",
     "linkText": "获取函数",
     "type": "copy",
     "class": [
