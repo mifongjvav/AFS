@@ -26,6 +26,16 @@
 
 ## 提交函数
 
+### 通过GitHub Issue
+
+打开[AFS的issue](https://github.com/mifongjvav/AFS/issues/)
+
+点击New issue
+
+选择`提交请求`模板
+
+输入信息，创建。
+
 ### 通过作者
 
 如果你什么都不会，加QQ：
@@ -126,7 +136,11 @@ git pull
 
 ## 许可证
 
-AFS 提供的的函数默认根据 MIT 许可证进行许可。更多信息请参阅许可证文件 。[tl;dr](https://tldrlegal.com/license/mit-license) 只要在任何作品/源代码的副本中包含原始版权和许可证声明，你可以做任何你想做的事情。
+AFS 提供的的函数内的算法默认根据 MIT 许可证进行许可。更多信息请参阅许可证文件 。[tl;dr](https://tldrlegal.com/license/mit-license) 只要在任何作品/源代码的副本中包含原始版权和许可证声明，你可以做任何你想做的事情。
+
+> [!NOTE]
+> 虽然编程猫的用户协议禁止为作品添加许可证
+> 但是我他妈给我的函数算法加许可证又没用编程猫的缺心眼编辑器，编程猫管不着。我算法用脑电波写的。
 
 如果你的函数需要使用其它许可证进行许可，请在简介标明。
 
@@ -136,11 +150,6 @@ AFS 提供的的函数默认根据 MIT 许可证进行许可。更多信息请�
 
 |hhcl233|
 |--|
-
-### 函数/教程贡献
-
-|旁观者JErS|方圆圆|imaginary number|Zhuan_|BKS_Limo|CCB|白颜料|
-|--|--|--|--|--|--|--|
 
 ## GitHub 贡献者（仅通过Pull Request提交函数的贡献者）
 
