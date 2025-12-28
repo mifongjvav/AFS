@@ -1,4 +1,4 @@
-name: File upload issue to PR
+name: File upload issue -> comment with file links
 
 on:
   issues:
@@ -7,29 +7,22 @@ on:
       - edited
 
 permissions:
-  contents: write
-  pull-requests: write
   issues: write
+  contents: read
 
 jobs:
-  handle-file-upload-issue:
+  file-upload-comment:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Parse uploaded files from issue
+      - name: Parse uploads and comment
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const fs = require('fs');
-            const path = require('path');
-
             const issue = context.payload.issue;
             if (!issue) return;
 
+            // 仅处理标题精确匹配
             if ((issue.title || '').trim() !== '[文件上传请求]') {
               console.log('Not a file upload issue.');
               return;
@@ -38,22 +31,24 @@ jobs:
             const body = issue.body || '';
             const urls = new Set();
 
-            // 1️⃣ Markdown links: (url)
+            // 1) Markdown links: (https://...)
             for (const m of body.matchAll(/\((https?:\/\/[^)\s]+)\)/g)) {
               urls.add(m[1]);
             }
 
-            // 2️⃣ HTML src / href
-            for (const m of body.matchAll(/(?:src|href)="(https?:\/\/[^"]+)"/g)) {
+            // 2) HTML src / href attributes
+            for (const m of body.matchAll(/(?:src|href)=["'](https?:\/\/[^"']+)["']/g)) {
               urls.add(m[1]);
             }
 
-            // 3️⃣ Bare URLs
+            // 3) Bare URLs
             for (const m of body.matchAll(/https?:\/\/\S+/g)) {
-              urls.add(m[0]);
+              // trim trailing punctuation that is not part of url (common in texts)
+              let u = m[0].replace(/[),.!?;:]$/, '');
+              urls.add(u);
             }
 
-            // GitHub attachment whitelist
+            // 只保留 GitHub 上传相关的 URL（兼容旧/新附件系统）
             const fileUrls = [...urls].filter(u =>
               u.includes('user-images.githubusercontent.com') ||
               u.includes('github.com/user-attachments/assets') ||
@@ -66,34 +61,55 @@ jobs:
                 repo: context.repo.repo,
                 issue_number: issue.number,
                 body: [
-                  '❌ **未检测到任何 GitHub 上传的附件**',
+                  '❌ **未检测到任何 GitHub 上传的附件**。',
                   '',
-                  '请直接拖拽或粘贴文件到 Issue 编辑框中。',
-                  '支持的形式包括：',
-                  '- Markdown 图片 / 文件',
-                  '- HTML `<img src="...">`',
-                  '- GitHub 新附件系统（user-attachments）'
+                  '请直接通过 Issue 编辑器拖拽或粘贴文件上传（支持 Markdown 图片、HTML `<img src>`、以及 GitHub 新的 user-attachments）。'
                 ].join('\n')
               });
               return;
             }
 
-            const outputPath = path.join(process.cwd(), 'uploaded-files.txt');
-            fs.writeFileSync(outputPath, fileUrls.join('\n') + '\n', 'utf8');
+            // 尝试从 URL 中提取文件名以便显示
+            function filenameFromUrl(u) {
+              try {
+                const urlObj = new URL(u);
+                const parts = urlObj.pathname.split('/');
+                let name = parts.filter(Boolean).pop() || u;
+                // 如果最后一段是 GUID 样式（user-attachments 有时是 /assets/<uuid>），尝试使用查询或整个 path
+                if (!name.includes('.') && urlObj.search) {
+                  // try to find filename in search params (rare)
+                  for (const v of urlObj.searchParams.values()) {
+                    if (v.includes('.')) return decodeURIComponent(v);
+                  }
+                }
+                name = decodeURIComponent(name);
+                return name;
+              } catch (e) {
+                return u;
+              }
+            }
 
-            console.log('Extracted files:', fileUrls);
+            const owner = context.repo.owner;
+            const lines = [];
+            for (const u of fileUrls) {
+              const fn = filenameFromUrl(u);
+              // 使用 Markdown 链接显示（可点击下载）
+              lines.push(`- [${fn}](${u})`);
+            }
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: 'chore: add uploaded files list'
-          title: '添加上传的文件列表'
-          body: |
-            本 PR 由 GitHub Action 自动生成。
+            const commentBody = [
+              `文件上传请求已收到 @${owner}，点击下载文件：`,
+              '',
+              ...lines,
+              '',
+              '（若文件无法下载，请确认 Issue 中的附件是通过 GitHub 编辑器上传的）'
+            ].join('\n');
 
-            - 来源 Issue：#${{ github.event.issue.number }}
-            - 内容：从 Issue 正文中提取的所有 GitHub 上传附件
-            - 格式：根目录 `uploaded-files.txt`，每行一个文件 URL
-          branch: file-upload/issue-${{ github.event.issue.number }}
-          delete-branch: true
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: commentBody
+            });
+
+            console.log('Commented with file links.');
