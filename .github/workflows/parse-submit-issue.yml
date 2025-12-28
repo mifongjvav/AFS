@@ -215,7 +215,7 @@ jobs:
 
             const result = {
               title,
-              icon: icon || 'fas fa-files',
+              icon: icon || 'fas fa-file',
               description: `<p>原作者：${author || ''}</p><p>${desc}</p>`,
               url: link,
               linkText: linkText || '',
