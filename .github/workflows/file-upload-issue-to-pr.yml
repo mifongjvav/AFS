@@ -22,82 +22,60 @@ jobs:
             const issue = context.payload.issue;
             if (!issue) return;
 
-            // 仅处理标题精确匹配
             if ((issue.title || '').trim() !== '[文件上传请求]') {
-              console.log('Not a file upload issue.');
               return;
             }
 
             const body = issue.body || '';
             const urls = new Set();
 
-            // 1) Markdown links: (https://...)
+            // 1️⃣ Markdown links: (URL)
             for (const m of body.matchAll(/\((https?:\/\/[^)\s]+)\)/g)) {
               urls.add(m[1]);
             }
 
-            // 2) HTML src / href attributes
+            // 2️⃣ HTML src / href
             for (const m of body.matchAll(/(?:src|href)=["'](https?:\/\/[^"']+)["']/g)) {
               urls.add(m[1]);
             }
 
-            // 3) Bare URLs
-            for (const m of body.matchAll(/https?:\/\/\S+/g)) {
-              // trim trailing punctuation that is not part of url (common in texts)
-              let u = m[0].replace(/[),.!?;:]$/, '');
-              urls.add(u);
-            }
-
-            // 只保留 GitHub 上传相关的 URL（兼容旧/新附件系统）
-            const fileUrls = [...urls].filter(u =>
-              u.includes('user-images.githubusercontent.com') ||
-              u.includes('github.com/user-attachments/assets') ||
-              u.includes('/files/')
-            );
+            // 只允许 GitHub 上传附件
+            const fileUrls = [...urls]
+              .map(u => u.trim().replace(/[)"'>]+$/, '')) // 清理尾部脏字符
+              .filter(u =>
+                u.includes('user-images.githubusercontent.com') ||
+                u.includes('github.com/user-attachments/assets') ||
+                u.includes('/files/')
+              );
 
             if (fileUrls.length === 0) {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issue.number,
-                body: [
-                  '❌ **未检测到任何 GitHub 上传的附件**。',
-                  '',
-                  '请直接通过 Issue 编辑器拖拽或粘贴文件上传（支持 Markdown 图片、HTML `<img src>`、以及 GitHub 新的 user-attachments）。'
-                ].join('\n')
+                body: '❌ 未检测到任何 GitHub 上传的附件，请直接拖拽或粘贴文件到 Issue 编辑器中。'
               });
               return;
             }
 
-            // 尝试从 URL 中提取文件名以便显示
-            function filenameFromUrl(u) {
+            function displayName(u) {
               try {
-                const urlObj = new URL(u);
-                const parts = urlObj.pathname.split('/');
-                let name = parts.filter(Boolean).pop() || u;
-                // 如果最后一段是 GUID 样式（user-attachments 有时是 /assets/<uuid>），尝试使用查询或整个 path
-                if (!name.includes('.') && urlObj.search) {
-                  // try to find filename in search params (rare)
-                  for (const v of urlObj.searchParams.values()) {
-                    if (v.includes('.')) return decodeURIComponent(v);
-                  }
+                const p = new URL(u).pathname.split('/').filter(Boolean);
+                const last = p[p.length - 1];
+                // 如果是 user-attachments 的 UUID，用通用名称
+                if (/^[0-9a-f-]{36}$/i.test(last)) {
+                  return 'GitHub 附件';
                 }
-                name = decodeURIComponent(name);
-                return name;
-              } catch (e) {
-                return u;
+                return decodeURIComponent(last);
+              } catch {
+                return 'GitHub 附件';
               }
             }
 
             const owner = context.repo.owner;
-            const lines = [];
-            for (const u of fileUrls) {
-              const fn = filenameFromUrl(u);
-              // 使用 Markdown 链接显示（可点击下载）
-              lines.push(`- [${fn}](${u})`);
-            }
+            const lines = fileUrls.map(u => `- [${displayName(u)}](${u})`);
 
-            const commentBody = [
+            const comment = [
               `文件上传请求已收到 @${owner}，点击下载文件：`,
               '',
               ...lines,
@@ -109,7 +87,5 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issue.number,
-              body: commentBody
+              body: comment
             });
-
-            console.log('Commented with file links.');
