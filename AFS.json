@@ -206,6 +206,20 @@
     ]
   },
   {
+    "title": "剪枝优化碰撞检测",
+    "icon": "fas fa-file",
+    "description": "<p>原作者：Zhuan_</p><p>其实还是O(n^2)（，然后内有堆排 可能会有人需要（</p>",
+    "url": "https://shequ.codemao.cn/work/298777823",
+    "linkText": "点个赞呗qwqwq",
+    "type": "jump",
+    "class": [
+      "碰撞检测",
+      "暴力",
+      "堆",
+      "待定"
+    ]
+  },
+  {
     "title": "CCB的列表打乱",
     "icon": "fas fa-list",
     "description": " <p>原作者：CCB</p><p>还不错？</p>",
