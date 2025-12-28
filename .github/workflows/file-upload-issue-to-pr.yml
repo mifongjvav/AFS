@@ -1,0 +1,80 @@
+name: File upload issue to PR
+
+on:
+  issues:
+    types:
+      - opened
+      - edited
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  handle-file-upload-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Parse uploaded files from issue
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            const issue = context.payload.issue;
+            if (!issue) return;
+
+            if ((issue.title || '').trim() !== '[文件上传请求]') {
+              console.log('Not a file upload issue.');
+              return;
+            }
+
+            const body = issue.body || '';
+
+            // 提取 markdown 中的所有 URL
+            const urls = Array.from(
+              body.matchAll(/\((https?:\/\/[^)]+)\)/g),
+              m => m[1]
+            );
+
+            // 只保留 GitHub 上传文件相关链接
+            const fileUrls = urls.filter(u =>
+              u.includes('user-images.githubusercontent.com') ||
+              u.includes('/files/')
+            );
+
+            if (fileUrls.length === 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: '❌ 未检测到任何上传的文件，请直接拖拽或粘贴文件到 issue 中。'
+              });
+              return;
+            }
+
+            // 写入根目录文件
+            const outputFile = path.join(process.cwd(), 'uploaded-files.txt');
+            fs.writeFileSync(outputFile, fileUrls.join('\n') + '\n', 'utf8');
+
+            console.log('Written file list:', fileUrls);
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: add uploaded files list'
+          title: '添加上传的文件列表'
+          body: |
+            本 PR 由 GitHub Action 自动生成。
+
+            - 来源 Issue：#${{ github.event.issue.number }}
+            - 内容：从 Issue 中提取的所有上传文件（每行一个）
+
+          branch: file-upload/${{ github.event.issue.number }}
+          delete-branch: true
