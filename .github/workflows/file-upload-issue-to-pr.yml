@@ -14,6 +14,7 @@ permissions:
 jobs:
   handle-file-upload-issue:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -35,16 +36,27 @@ jobs:
             }
 
             const body = issue.body || '';
+            const urls = new Set();
 
-            // 提取 markdown 中的所有 URL
-            const urls = Array.from(
-              body.matchAll(/\((https?:\/\/[^)]+)\)/g),
-              m => m[1]
-            );
+            // 1️⃣ Markdown links: (url)
+            for (const m of body.matchAll(/\((https?:\/\/[^)\s]+)\)/g)) {
+              urls.add(m[1]);
+            }
 
-            // 只保留 GitHub 上传文件相关链接
-            const fileUrls = urls.filter(u =>
+            // 2️⃣ HTML src / href
+            for (const m of body.matchAll(/(?:src|href)="(https?:\/\/[^"]+)"/g)) {
+              urls.add(m[1]);
+            }
+
+            // 3️⃣ Bare URLs
+            for (const m of body.matchAll(/https?:\/\/\S+/g)) {
+              urls.add(m[0]);
+            }
+
+            // GitHub attachment whitelist
+            const fileUrls = [...urls].filter(u =>
               u.includes('user-images.githubusercontent.com') ||
+              u.includes('github.com/user-attachments/assets') ||
               u.includes('/files/')
             );
 
@@ -53,16 +65,23 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issue.number,
-                body: '❌ 未检测到任何上传的文件，请直接拖拽或粘贴文件到 issue 中。'
+                body: [
+                  '❌ **未检测到任何 GitHub 上传的附件**',
+                  '',
+                  '请直接拖拽或粘贴文件到 Issue 编辑框中。',
+                  '支持的形式包括：',
+                  '- Markdown 图片 / 文件',
+                  '- HTML `<img src="...">`',
+                  '- GitHub 新附件系统（user-attachments）'
+                ].join('\n')
               });
               return;
             }
 
-            // 写入根目录文件
-            const outputFile = path.join(process.cwd(), 'uploaded-files.txt');
-            fs.writeFileSync(outputFile, fileUrls.join('\n') + '\n', 'utf8');
+            const outputPath = path.join(process.cwd(), 'uploaded-files.txt');
+            fs.writeFileSync(outputPath, fileUrls.join('\n') + '\n', 'utf8');
 
-            console.log('Written file list:', fileUrls);
+            console.log('Extracted files:', fileUrls);
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
@@ -74,7 +93,7 @@ jobs:
             本 PR 由 GitHub Action 自动生成。
 
             - 来源 Issue：#${{ github.event.issue.number }}
-            - 内容：从 Issue 中提取的所有上传文件（每行一个）
-
-          branch: file-upload/${{ github.event.issue.number }}
+            - 内容：从 Issue 正文中提取的所有 GitHub 上传附件
+            - 格式：根目录 `uploaded-files.txt`，每行一个文件 URL
+          branch: file-upload/issue-${{ github.event.issue.number }}
           delete-branch: true
