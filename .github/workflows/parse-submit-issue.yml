@@ -36,13 +36,14 @@ jobs:
               const comment = context.payload.comment;
 
               if ((issue.title || '').trim() !== '[提交请求]') return;
-
-              // 只在 @github-actions 时触发
               if (!comment.body.includes('@github-actions')) return;
 
               const body = issue.body || '';
-              const match = body.match(/状态\s*[：:]\s*(.*)/);
-              const status = match && match[1] ? match[1].trim() : '待定';
+              const m =
+                body.match(/状态（制作中\s*\|\s*待定）\s*[：:]\s*(.*)/) ||
+                body.match(/状态\s*[：:]\s*(.*)/);
+
+              const status = m && m[1] ? m[1].trim() : '待定';
 
               if (status === '制作中') {
                 await github.rest.issues.createComment({
@@ -73,7 +74,8 @@ jobs:
             }
 
             const kv = {};
-            block.split(/\r?\n/)
+            block
+              .split(/\r?\n/)
               .map(l => l.trim())
               .filter(Boolean)
               .forEach(line => {
@@ -94,14 +96,24 @@ jobs:
             const title = pick('标题');
             const desc = pick('简介', '描述');
             const link = pick('链接地址', '链接');
-            const type = pick('获取方式', '获取方式（jump | copy | download）');
-            const statusRaw = pick('状态');
+            const type = pick(
+              '获取方式',
+              '获取方式（jump | copy | download）'
+            );
+
+            const statusRaw = pick(
+              '状态',
+              '状态（制作中 | 待定）'
+            );
             const status = statusRaw || '待定';
 
             const icon = pick('FontAwesome icon（留空为默认，格式为fas fa-图标名称）');
             const author = pick('作者', '原作者');
             const linkText = pick('获取按钮昵称', '获取按钮');
-            const tags = pick('标签（多个标签用英文逗号分隔）', '标签');
+            const tags = pick(
+              '标签（多个标签用英文逗号分隔）',
+              '标签'
+            );
 
             const errors = [];
 
@@ -137,7 +149,8 @@ jobs:
             const classes = [];
 
             if (tags) {
-              tags.split(',')
+              tags
+                .split(',')
                 .map(t => t.trim())
                 .filter(t => t && !forbidden.includes(t))
                 .forEach(t => classes.push(t));
