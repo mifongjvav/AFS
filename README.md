@@ -22,7 +22,7 @@
 
 |AFS总站|AFS镜像站|
 |--|--|
-|<https://afs-web.pages.dev/>|<https://mifongjvav.dpdns.org//>|
+|<https://afs-web.pages.dev/>|<https://afsweb.qzz.io/>|
 
 ## 提交函数
 
