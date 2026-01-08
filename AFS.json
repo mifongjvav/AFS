@@ -7,6 +7,7 @@
     "linkText": "获取函数",
     "type": "jump",
     "class": [
+      "KittenN",
       "工具",
       "歌词",
       "上架"
@@ -20,6 +21,7 @@
     "linkText": "获取函数",
     "type": "jump",
     "class": [
+      "KittenN",
       "函数库",
       "通用",
       "算法",
@@ -34,6 +36,7 @@
     "linkText": "获取函数",
     "type": "copy",
     "class": [
+      "KittenN",
       "数学",
       "动画",
       "上架"
@@ -47,6 +50,7 @@
     "linkText": "获取函数",
     "type": "copy",
     "class": [
+      "KittenN",
       "特效",
       "UI",
       "上架"
@@ -60,6 +64,7 @@
     "linkText": "获取函数",
     "type": "copy",
     "class": [
+      "KittenN",
       "数学",
       "上架"
     ]
@@ -72,6 +77,7 @@
     "linkText": "获取函数",
     "type": "copy",
     "class": [
+      "KittenN",
       "UI",
       "特效",
       "上架"
@@ -85,6 +91,7 @@
     "linkText": "获取函数",
     "type": "copy",
     "class": [
+      "KittenN",
       "UI",
       "特效",
       "上架"
@@ -98,6 +105,7 @@
     "linkText": "获取函数",
     "type": "copy",
     "class": [
+      "KittenN",
       "工具",
       "文本",
       "上架"
@@ -111,6 +119,7 @@
     "linkText": "获取函数",
     "type": "copy",
     "class": [
+      "KittenN",
       "数学",
       "上架"
     ]
@@ -123,6 +132,7 @@
     "linkText": "获取作品",
     "type": "jump",
     "class": [
+      "KittenN",
       "3D",
       "渲染",
       "上架"
@@ -136,6 +146,7 @@
     "linkText": "获取作品",
     "type": "jump",
     "class": [
+      "KittenN",
       "联机",
       "上架"
     ]
@@ -148,6 +159,7 @@
     "linkText": "获取作品",
     "type": "jump",
     "class": [
+      "KittenN",
       "函数库",
       "综合",
       "上架"
@@ -161,6 +173,7 @@
     "linkText": "获取作品",
     "type": "jump",
     "class": [
+      "KittenN",
       "3D",
       "渲染",
       "上架"
@@ -174,6 +187,7 @@
     "linkText": "获取作品",
     "type": "jump",
     "class": [
+      "KittenN",
       "3D",
       "引擎",
       "上架"
@@ -187,6 +201,7 @@
     "linkText": "获取作品",
     "type": "jump",
     "class": [
+      "Kitten3",
       "3D",
       "引擎",
       "上架"
@@ -200,6 +215,7 @@
     "linkText": "下载作品",
     "type": "download",
     "class": [
+      "Kitten4",
       "函数库",
       "工具",
       "上架"
@@ -213,6 +229,7 @@
     "linkText": "点个赞呗qwqwq",
     "type": "jump",
     "class": [
+      "Kitten4",
       "碰撞检测",
       "暴力",
       "堆",
@@ -227,6 +244,7 @@
     "linkText": "获取作品",
     "type": "jump",
     "class": [
+      "KittenN",
       "算法",
       "工具",
       "上架"
@@ -240,6 +258,7 @@
     "linkText": "获取函数",
     "type": "copy",
     "class": [
+      "KittenN",
       "UI",
       "工具",
       "上架"
