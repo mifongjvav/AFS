@@ -275,5 +275,35 @@
       "教程",
       "上架"
     ]
-  }
+  },
+  {
+  "title": "小写拼音自动分词",
+  "icon": "fas fa-file",
+  "description": "<p>原作者：凌风光耀Aug</p><p>可以通过输入小写未分词拼音（纯字母）来获得用“ ' ”分隔符分隔的分词后拼音，高效率</p>",
+  "url": "https://image2url.com/r2/default/files/1775380554139-490e044e-bdac-4c3e-baeb-f75ae6513379.txt",
+  "linkText": "点击复制",
+  "type": "copy",
+  "class": [
+    "KittenN",
+    "算法",
+    "文本",
+    "上架"
+    ]
+  },
+  {
+  "title": "KittenN增强扩展",
+  "icon": "fas fa-plug-circle-bolt",
+  "description": "<p>原作者：Argon,方圆圆,imaginary number</p><p>内含归并排序，时间戳，绘制UI等多种功能</p>",
+  "url": "https://kn.codemao.cn/view/?workId=311169181",
+  "linkText": "WOWOW",
+  "type": "jump",
+  "class": [
+    "KittenN",
+    "增强",
+    "扩展",
+    "Triangles",
+    "Sort",
+    "上架"
+  ]
+}
 ]
