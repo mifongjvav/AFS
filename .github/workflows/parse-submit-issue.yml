@@ -1,240 +1,302 @@
-name: Issue To AFS
+name: Parse submit issue with status support (robust parsing)
 
 on:
   issues:
-    types: [opened]
+    types:
+      - opened
+      - edited
+  issue_comment:
+    types:
+      - created
 
 permissions:
-  contents: write
   issues: write
-
-concurrency:
-  group: afs-json
-  cancel-in-progress: false
+  contents: write    # 允许写入仓库文件
 
 jobs:
-  submit:
-    if: contains(github.event.issue.body, '[提交请求]') && contains(github.event.issue.body, '[END]')
+  handle-submit-issue:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Handle submit issue
+        uses: actions/github-script@v6
         with:
-          fetch-depth: 0
-
-      - name: Parse Issue
-        id: parse
-        uses: actions/github-script@v8
-        with:
-          result-encoding: string
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const body = context.payload.issue.body || "";
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
 
-            if (!body.includes("[提交请求]")) {
-              throw new Error("不是提交请求");
-            }
-            if (!body.includes("[END]")) {
-              throw new Error("提交格式缺少 [END]");
-            }
+            const isIssueEvent = !!context.payload.issue && !context.payload.comment;
+            const isCommentEvent = !!context.payload.comment;
 
-            function getField(label) {
-              const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-              const re = new RegExp("^" + escaped + "\\s*[：:]\\s*(.*)$", "m");
-              const match = body.match(re);
-              return match ? match[1].trim() : "";
-            }
-
-            const data = {
-              title: getField("标题"),
-              icon: getField("FontAwesome icon（留空为默认，格式为fas fa-图标名称）"),
-              author: getField("作者"),
-              description: getField("简介"),
-              link: getField("链接地址"),
-              type: getField("获取方式（jump | copy | download）"),
-              linkText: getField("获取按钮昵称"),
-              tags: getField("标签（多个标签用英文逗号分隔）"),
-              status: getField("状态（制作中 | 待定）")
-            };
-
-            return JSON.stringify(data);
-
-      - name: Update AFS.json
-        uses: actions/github-script@v8
-        env:
-          DATA: ${{ steps.parse.outputs.result }}
-        with:
-          script: |
-            const fs = require("fs");
-            const path = require("path");
-
-            const data = JSON.parse(process.env.DATA || "{}");
-            const file = path.join(process.cwd(), "AFS.json");
-
-            function cleanText(value) {
-              return String(value ?? "")
-                .replace(/\u0000/g, "")
-                .trim();
+            // helper: normalize a key name by removing parenthetical hints and trimming
+            function normalizeKey(k) {
+              if (!k) return '';
+              // replace full-width （ ） and half-width ( )
+              // remove any content inside parentheses, then trim
+              return k.replace(/（.*?）/g, '')
+                      .replace(/\(.*?\)/g, '')
+                      .replace(/\u3000/g, ' ') // full-width space -> normal space
+                      .trim();
             }
 
-            function escapeHtml(value) {
-              return cleanText(value)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#39;");
+            // parse a body block into kv map with normalized keys
+            function parseBlockToKV(block) {
+              const kv = {};
+              block.split(/\r?\n/)
+                .map(l => l.trim())
+                .filter(Boolean)
+                .forEach(line => {
+                  // find first colon (Chinese or English)
+                  let i = line.indexOf('：');
+                  if (i === -1) i = line.indexOf(':');
+                  if (i > -1) {
+                    const rawKey = line.slice(0, i).trim();
+                    const rawVal = line.slice(i + 1).trim();
+                    const key = normalizeKey(rawKey);
+                    kv[key] = rawVal;
+                  }
+                });
+              return kv;
             }
 
-            function normalizeIcon(value) {
-              const icon = cleanText(value);
-              if (!icon) return "fas fa-file";
-              if (!/^fas fa-[a-z0-9-]+$/i.test(icon)) {
-                throw new Error("非法 FontAwesome 图标");
-              }
-              return icon;
-            }
-
-            function normalizeUrl(value) {
-              const url = cleanText(value);
-              let parsed;
-              try {
-                parsed = new URL(url);
-              } catch {
-                throw new Error("链接格式错误");
-              }
-              if (!["http:", "https:"].includes(parsed.protocol)) {
-                throw new Error("链接必须是 http/https");
-              }
-              return parsed.toString();
-            }
-
-            function normalizeType(value) {
-              const type = cleanText(value);
-              const allowed = ["jump", "copy", "download"];
-              if (!allowed.includes(type)) {
-                throw new Error("非法获取方式");
-              }
-              return type;
-            }
-
-            function normalizeStatus(value) {
-              const status = cleanText(value);
-              const allowed = ["制作中", "待定", "上架", "过审"];
-              if (!status) return "";
-              if (!allowed.includes(status)) {
-                throw new Error("非法状态");
-              }
-              return status;
-            }
-
-            function parseTags(value) {
-              return cleanText(value)
-                .split(",")
-                .map(v => cleanText(v))
-                .filter(Boolean);
-            }
-
-            if (!cleanText(data.title)) throw new Error("标题不能为空");
-            if (!cleanText(data.author)) throw new Error("作者不能为空");
-            if (!cleanText(data.description)) throw new Error("简介不能为空");
-
-            const item = {
-              title: cleanText(data.title),
-              icon: normalizeIcon(data.icon),
-              description:
-                `<p>原作者：${escapeHtml(data.author)}</p>` +
-                `<p>${escapeHtml(data.description)}</p>`,
-              link: normalizeUrl(data.link),
-              linkText: cleanText(data.linkText) || "获取资源",
-              type: normalizeType(data.type),
-              class: [
-                ...parseTags(data.tags),
-                normalizeStatus(data.status)
-              ].filter(Boolean)
-            };
-
-            let afs = [];
-            if (fs.existsSync(file)) {
-              const raw = fs.readFileSync(file, "utf8").trim();
-              if (raw) {
-                try {
-                  afs = JSON.parse(raw);
-                } catch {
-                  throw new Error("AFS.json 不是合法 JSON");
+            // unified pick that looks up normalized keys and some variants
+            function makePicker(kv) {
+              return function pick(...keys) {
+                for (const k of keys) {
+                  const nk = normalizeKey(k);
+                  if (kv[nk] !== undefined) return kv[nk].trim();
                 }
+                return '';
+              };
+            }
+
+            /* =================================================
+               评论事件：@bot 且 状态=制作中 → 提醒仓库所有者
+            ================================================= */
+            if (isCommentEvent) {
+              const issue = context.payload.issue;
+              const comment = context.payload.comment;
+
+              if ((issue.title || '').trim() !== '[提交请求]') return;
+              if (!comment.body.includes('@github-actions')) return;
+
+              const body = issue.body || '';
+              let block = body;
+              const s = body.indexOf('[提交请求]');
+              const e = body.indexOf('[END]');
+              if (s !== -1 && e !== -1 && e > s) {
+                block = body.slice(s + '[提交请求]'.length, e);
+              }
+
+              const kv = parseBlockToKV(block);
+              const pick = makePicker(kv);
+              const statusRaw = pick('状态', '状态（制作中 | 待定）');
+              const status = statusRaw || '待定';
+
+              if (status === '制作中') {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issue.number,
+                  body: `⚠️ @${owner} 当前提交状态为 **制作中**，请确认是否需要调整为 **待定**。`
+                });
+              }
+              return;
+            }
+
+            /* ===============================
+               Issue 事件：解析 + 校验 + JSON + 更新 AFS.json
+            =============================== */
+            const issue = context.payload.issue;
+            const issueNumber = issue.number;
+
+            if ((issue.title || '').trim() !== '[提交请求]') return;
+
+            const body = issue.body || '';
+
+            let block = body;
+            const s = body.indexOf('[提交请求]');
+            const e = body.indexOf('[END]');
+            if (s !== -1 && e !== -1 && e > s) {
+              block = body.slice(s + '[提交请求]'.length, e);
+            }
+
+            const kv = parseBlockToKV(block);
+            const pick = makePicker(kv);
+
+            const title = pick('标题', 'title');
+            const desc = pick('简介', '描述', 'description');
+            const link = pick('链接地址', '链接', 'link');
+            const type = pick('获取方式', '获取方式（jump | copy | download）', 'type');
+
+            const statusRaw = pick('状态', '状态（制作中 | 待定）');
+            const status = statusRaw || '待定';
+
+            const icon = pick('FontAwesome icon（留空为默认，格式为fas fa-图标名称）', 'icon');
+            const author = pick('作者', '原作者', 'author');
+            const linkText = pick('获取按钮昵称', '获取按钮', 'linkText');
+            const tags = pick('标签（多个标签用英文逗号分隔）', '标签', 'class', 'tags');
+
+            const errors = [];
+
+            if (!title) errors.push('缺少必填字段：标题');
+            if (!desc) errors.push('缺少必填字段：简介');
+            if (!link) errors.push('缺少必填字段：链接地址');
+            if (!type || !['jump','copy','download'].includes(type.toLowerCase())) {
+              errors.push('获取方式必须是 jump / copy / download');
+            }
+            if (!['待定', '制作中'].includes(status)) {
+              errors.push('状态只能是：待定 或 制作中');
+            }
+
+            // 标签黑名单（包含 不允许在标签中出现的 状态值）
+            const forbidden = [
+              'invalid',
+              '坟场',
+              '过审',
+              '上架',
+              '用户喜爱',
+              '制作中',
+              '待定'
+            ];
+
+            if (errors.length > 0) {
+              // add invalid label if not present
+              const labelNames = issue.labels.map(l => l.name);
+              if (!labelNames.includes('invalid')) {
+                await github.rest.issues.addLabels({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  labels: ['invalid']
+                });
+              }
+
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: issueNumber,
+                body: [
+                  '❌ **提交内容校验失败**',
+                  '',
+                  ...errors.map((e,i)=>`${i+1}. ${e}`),
+                  '',
+                  '请修正后编辑 issue，系统会自动重新校验。',
+                  '',
+                  '参考格式（支持括号说明）：',
+                  '```',
+                  '[提交请求]',
+                  '标题：示例标题',
+                  '简介：示例简介（支持括号说明）',
+                  '链接地址：https://example.com',
+                  '获取方式（jump | copy | download）：download',
+                  '状态（制作中 | 待定）：待定',
+                  '获取按钮昵称：立即获取',
+                  '标签（多个标签用英文逗号分隔）：工具,网络',
+                  '[END]',
+                  '```'
+                ].join('\n')
+              });
+              return;
+            }
+
+            const classes = [];
+
+            if (tags) {
+              tags
+                .split(',')
+                .map(t => t.trim())
+                .filter(t => t && !forbidden.includes(t))
+                .forEach(t => classes.push(t));
+            }
+
+            // 最后追加状态（唯一来源）
+            classes.push(status);
+
+            const result = {
+              title,
+              icon: icon || 'fas fa-file',
+              description: `<p>原作者：${author || ''}</p><p>${desc}</p>`,
+              url: link,
+              linkText: linkText || '',
+              type: type.toLowerCase(),
+              class: classes
+            };
+
+            // ========== 更新 AFS.json ==========
+            const afsPath = 'AFS.json';
+            let existingItems = [];
+            let currentSha = null;
+
+            try {
+              // 尝试获取现有文件
+              const getResp = await github.rest.repos.getContent({
+                owner,
+                repo,
+                path: afsPath
+              });
+              // 文件存在
+              const contentBase64 = getResp.data.content;
+              const contentStr = Buffer.from(contentBase64, 'base64').toString('utf-8');
+              existingItems = JSON.parse(contentStr);
+              if (!Array.isArray(existingItems)) {
+                existingItems = [];
+              }
+              currentSha = getResp.data.sha;
+            } catch (err) {
+              if (err.status === 404) {
+                // 文件不存在，视为空数组
+                existingItems = [];
+                currentSha = null;
+              } else {
+                throw err;
               }
             }
 
-            if (!Array.isArray(afs)) {
-              throw new Error("AFS.json 顶层必须是数组");
+            // 根据 url 去重：若已存在则替换，否则追加
+            const existingIndex = existingItems.findIndex(item => item.url === result.url);
+            if (existingIndex !== -1) {
+              existingItems[existingIndex] = result;
+              var updateMsg = `✅ 已更新 AFS.json 中的项目（url: ${result.url}）`;
+            } else {
+              existingItems.push(result);
+              var updateMsg = `✅ 已追加新项目到 AFS.json（url: ${result.url}）`;
             }
 
-            const dup = afs.some(x =>
-              x &&
-              typeof x === "object" &&
-              cleanText(x.title) === item.title &&
-              cleanText(x.link) === item.link
-            );
+            const newContentStr = JSON.stringify(existingItems, null, 2);
+            const newContentBase64 = Buffer.from(newContentStr, 'utf-8').toString('base64');
 
-            if (dup) {
-              throw new Error("已存在相同标题和链接的条目");
-            }
-
-            afs.push(item);
-
-            fs.writeFileSync(file, JSON.stringify(afs, null, 2) + "\n", "utf8");
-
-      - name: Rebase Before Push
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git pull --rebase origin "${{ github.event.repository.default_branch }}"
-
-      - name: Commit Changes
-        run: |
-          git add AFS.json
-
-          if git diff --cached --quiet; then
-            echo "No changes"
-            exit 0
-          fi
-
-          git commit -m "Add item from issue #${{ github.event.issue.number }}"
-          git push origin HEAD:${{ github.event.repository.default_branch }}
-
-      - name: Success Comment
-        if: success()
-        uses: actions/github-script@v8
-        with:
-          script: |
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: "✅ 已成功写入根目录 AFS.json 并提交。"
+            const commitMsg = `Update AFS.json via issue #${issueNumber}: ${title}`;
+            const updateResp = await github.rest.repos.createOrUpdateFileContents({
+              owner,
+              repo,
+              path: afsPath,
+              message: commitMsg,
+              content: newContentBase64,
+              sha: currentSha  // 若为 null，则会新建文件
             });
 
-      - name: Close Issue
-        if: success()
-        uses: actions/github-script@v8
-        with:
-          script: |
+            // ========== 清理 issue labels 中的黑名单项 ==========
             await github.rest.issues.update({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              state: "closed"
+              owner,
+              repo,
+              issue_number: issueNumber,
+              labels: issue.labels
+                .map(l => l.name)
+                .filter(l => !forbidden.includes(l))
             });
 
-      - name: Failure Comment
-        if: failure()
-        uses: actions/github-script@v8
-        with:
-          script: |
+            // ========== 在 issue 中回复结果 ==========
             await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: "❌ 提交失败，请检查字段格式后重新提交。"
+              owner,
+              repo,
+              issue_number: issueNumber,
+              body: [
+                updateMsg,
+                `📄 文件已提交：\`${afsPath}\` (commit: \`${updateResp.data.commit.sha.slice(0,7)}\`)`,
+                `**当前项目状态**：${status}`,
+                '```json',
+                JSON.stringify(result, null, 2),
+                '```'
+              ].join('\n')
             });
