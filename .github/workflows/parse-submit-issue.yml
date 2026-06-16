@@ -11,7 +11,11 @@ on:
 
 permissions:
   issues: write
-  contents: read
+  contents: write
+
+concurrency:
+  group: submit-issue-${{ github.event.issue.number || github.run_id }}
+  cancel-in-progress: false
 
 jobs:
   handle-submit-issue:
@@ -24,29 +28,86 @@ jobs:
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
+            const fs = require('fs');
 
             const isIssueEvent = !!context.payload.issue && !context.payload.comment;
             const isCommentEvent = !!context.payload.comment;
 
-            // helper: normalize a key name by removing parenthetical hints and trimming
+            const allowedFileHosts = new Set([
+              'user-images.githubusercontent.com',
+              'github.com',
+              'githubusercontent.com'
+            ]);
+
             function normalizeKey(k) {
               if (!k) return '';
-              // replace full-width （ ） and half-width ( )
-              // remove any content inside parentheses, then trim
-              return k.replace(/（.*?）/g, '')
-                      .replace(/\(.*?\)/g, '')
-                      .replace(/\u3000/g, ' ') // full-width space -> normal space
-                      .trim();
+              return String(k)
+                .replace(/（.*?）/g, '')
+                .replace(/\(.*?\)/g, '')
+                .replace(/\u3000/g, ' ')
+                .trim();
             }
 
-            // parse a body block into kv map with normalized keys
+            function escapeHtml(s) {
+              return String(s ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+            }
+
+            function safeText(s, maxLen = 2000) {
+              return String(s ?? '')
+                .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
+                .trim()
+                .slice(0, maxLen);
+            }
+
+            function safeTag(t) {
+              return safeText(t, 80)
+                .replace(/[^\p{L}\p{N}\s._\-·•/()（）,，]/gu, '')
+                .trim();
+            }
+
+            function isPrivateIPv4(host) {
+              if (!/^\d{1,3}(\.\d{1,3}){3}$/.test(host)) return false;
+              const parts = host.split('.').map(n => Number(n));
+              if (parts.some(n => Number.isNaN(n) || n < 0 || n > 255)) return true;
+              return (
+                parts[0] === 10 ||
+                (parts[0] === 127) ||
+                (parts[0] === 192 && parts[1] === 168) ||
+                (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) ||
+                (parts[0] === 169 && parts[1] === 254)
+              );
+            }
+
+            function safeHttpUrl(raw) {
+              const s = safeText(raw, 4000);
+              try {
+                const u = new URL(s);
+                if (!['http:', 'https:'].includes(u.protocol)) return '';
+                const host = u.hostname.toLowerCase();
+                if (
+                  host === 'localhost' ||
+                  host.endsWith('.localhost') ||
+                  host === '127.0.0.1' ||
+                  host === '::1' ||
+                  isPrivateIPv4(host)
+                ) return '';
+                return u.toString();
+              } catch {
+                return '';
+              }
+            }
+
             function parseBlockToKV(block) {
               const kv = {};
               block.split(/\r?\n/)
                 .map(l => l.trim())
                 .filter(Boolean)
                 .forEach(line => {
-                  // find first colon (Chinese or English)
                   let i = line.indexOf('：');
                   if (i === -1) i = line.indexOf(':');
                   if (i > -1) {
@@ -59,15 +120,78 @@ jobs:
               return kv;
             }
 
-            // unified pick that looks up normalized keys and some variants
             function makePicker(kv) {
               return function pick(...keys) {
                 for (const k of keys) {
                   const nk = normalizeKey(k);
-                  if (kv[nk] !== undefined) return kv[nk].trim();
+                  if (kv[nk] !== undefined) return safeText(kv[nk]);
                 }
                 return '';
               };
+            }
+
+            function extractBodyBlock(body, markerTitle) {
+              const marker = `[${markerTitle}]`;
+              const endMarker = '[END]';
+              let block = body || '';
+              const s = block.indexOf(marker);
+              const e = block.indexOf(endMarker);
+              if (s !== -1 && e !== -1 && e > s) {
+                block = block.slice(s + marker.length, e);
+              }
+              return block;
+            }
+
+            function extractGitHubAttachmentUrls(body) {
+              const urls = new Set();
+
+              for (const m of String(body || '').matchAll(/\((https?:\/\/[^)\s]+)\)/g)) {
+                urls.add(m[1]);
+              }
+
+              for (const m of String(body || '').matchAll(/(?:src|href)=["'](https?:\/\/[^"']+)["']/g)) {
+                urls.add(m[1]);
+              }
+
+              return [...urls]
+                .map(u => u.trim().replace(/[)"'>]+$/, ''))
+                .map(u => safeHttpUrl(u))
+                .filter(Boolean)
+                .filter(u => {
+                  try {
+                    const host = new URL(u).hostname.toLowerCase();
+                    return allowedFileHosts.has(host) || host.endsWith('.githubusercontent.com');
+                  } catch {
+                    return false;
+                  }
+                });
+            }
+
+            function dedupe(arr) {
+              return [...new Set(arr)];
+            }
+
+            async function upsertJsonFile(path, dataObj) {
+              const content = Buffer.from(JSON.stringify(dataObj, null, 2) + '\n', 'utf8').toString('base64');
+              let sha = undefined;
+              try {
+                const existing = await github.rest.repos.getContent({ owner, repo, path });
+                if (Array.isArray(existing.data)) {
+                  throw new Error(`Target path is a directory: ${path}`);
+                }
+                sha = existing.data.sha;
+              } catch (err) {
+                if (err.status !== 404) throw err;
+              }
+
+              await github.rest.repos.createOrUpdateFileContents({
+                owner,
+                repo,
+                path,
+                message: `chore: update submission json for issue #${context.payload.issue.number}`,
+                content,
+                sha
+              });
             }
 
             /* =================================================
@@ -78,16 +202,11 @@ jobs:
               const comment = context.payload.comment;
 
               if ((issue.title || '').trim() !== '[提交请求]') return;
+              if (comment.user?.type === 'Bot') return;
               if (!comment.body.includes('@github-actions')) return;
 
               const body = issue.body || '';
-              let block = body;
-              const s = body.indexOf('[提交请求]');
-              const e = body.indexOf('[END]');
-              if (s !== -1 && e !== -1 && e > s) {
-                block = body.slice(s + '[提交请求]'.length, e);
-              }
-
+              const block = extractBodyBlock(body, '提交请求');
               const kv = parseBlockToKV(block);
               const pick = makePicker(kv);
               const statusRaw = pick('状态', '状态（制作中 | 待定）');
@@ -113,14 +232,7 @@ jobs:
             if ((issue.title || '').trim() !== '[提交请求]') return;
 
             const body = issue.body || '';
-
-            let block = body;
-            const s = body.indexOf('[提交请求]');
-            const e = body.indexOf('[END]');
-            if (s !== -1 && e !== -1 && e > s) {
-              block = body.slice(s + '[提交请求]'.length, e);
-            }
-
+            const block = extractBodyBlock(body, '提交请求');
             const kv = parseBlockToKV(block);
             const pick = makePicker(kv);
 
@@ -142,14 +254,19 @@ jobs:
             if (!title) errors.push('缺少必填字段：标题');
             if (!desc) errors.push('缺少必填字段：简介');
             if (!link) errors.push('缺少必填字段：链接地址');
-            if (!type || !['jump','copy','download'].includes(type.toLowerCase())) {
+            if (!type || !['jump', 'copy', 'download'].includes(type.toLowerCase())) {
               errors.push('获取方式必须是 jump / copy / download');
             }
             if (!['待定', '制作中'].includes(status)) {
               errors.push('状态只能是：待定 或 制作中');
             }
 
-            // 标签黑名单（包含 不允许在标签中出现的 状态值）
+            const safeLink = safeHttpUrl(link);
+            if (!safeLink) {
+              errors.push('链接地址必须是可访问的 http(s) URL，且不能指向本机或内网地址');
+            }
+
+            const sanitizedTags = [];
             const forbidden = [
               'invalid',
               '坟场',
@@ -160,8 +277,15 @@ jobs:
               '待定'
             ];
 
+            if (tags) {
+              tags
+                .split(',')
+                .map(t => safeTag(t))
+                .filter(t => t && !forbidden.includes(t))
+                .forEach(t => sanitizedTags.push(t));
+            }
+
             if (errors.length > 0) {
-              // add invalid label if not present
               const labelNames = issue.labels.map(l => l.name);
               if (!labelNames.includes('invalid')) {
                 await github.rest.issues.addLabels({
@@ -179,7 +303,7 @@ jobs:
                 body: [
                   '❌ **提交内容校验失败**',
                   '',
-                  ...errors.map((e,i)=>`${i+1}. ${e}`),
+                  ...errors.map((e, i) => `${i + 1}. ${e}`),
                   '',
                   '请修正后编辑 issue，系统会自动重新校验。',
                   '',
@@ -200,30 +324,41 @@ jobs:
               return;
             }
 
-            const classes = [];
+            const safeIcon = /^fas\s+fa-[a-z0-9-]+$/i.test(safeText(icon, 80)) ? safeText(icon, 80) : 'fas fa-file';
 
-            if (tags) {
-              tags
-                .split(',')
-                .map(t => t.trim())
-                .filter(t => t && !forbidden.includes(t))
-                .forEach(t => classes.push(t));
-            }
+            const attachments = dedupe(extractGitHubAttachmentUrls(body)).slice(0, 20);
 
-            // 最后追加状态（唯一来源）
-            classes.push(status);
-
-            const result = {
-              title,
-              icon: icon || 'fas fa-file',
-              description: `<p>原作者：${author || ''}</p><p>${desc}</p>`,
-              url: link,
-              linkText: linkText || '',
+            const submission = {
+              schema: 'submit-request/v2',
+              issueNumber,
+              title: safeText(title, 120),
+              icon: safeIcon,
+              description: safeText(desc, 5000),
+              author: safeText(author, 120),
+              url: safeLink,
+              linkText: safeText(linkText, 120),
               type: type.toLowerCase(),
-              class: classes
+              status,
+              tags: sanitizedTags,
+              attachments,
+              processedAt: new Date().toISOString()
             };
 
-            // 清理 issue labels 中的黑名单项（包括制作中/待定）
+            const repoPath = `data/submissions/issue-${issueNumber}.json`;
+            await upsertJsonFile(repoPath, submission);
+
+            // 处理用的安全结果：所有用户内容都已做转义/白名单限制
+            const result = {
+              title: submission.title,
+              icon: submission.icon,
+              description: `<p>原作者：${escapeHtml(submission.author)}</p><p>${escapeHtml(submission.description)}</p>`,
+              url: submission.url,
+              linkText: submission.linkText,
+              type: submission.type,
+              class: [...submission.tags, submission.status],
+              attachments: submission.attachments
+            };
+
             await github.rest.issues.update({
               owner,
               repo,
@@ -239,6 +374,7 @@ jobs:
               issue_number: issueNumber,
               body: [
                 `✅ 提交解析完成（状态：${status}）`,
+                `已安全提交到仓库：\`${repoPath}\``,
                 '```json',
                 JSON.stringify(result, null, 2),
                 '```'
