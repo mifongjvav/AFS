@@ -8,22 +8,108 @@ on:
 
 permissions:
   issues: write
-  contents: read
+  contents: write
+
+concurrency:
+  group: file-upload-${{ github.event.issue.number || github.run_id }}
+  cancel-in-progress: false
 
 jobs:
   file-upload-comment:
     runs-on: ubuntu-latest
     steps:
-      - name: Parse uploads and comment
+      - name: Parse uploads, commit JSON, and comment
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
             const issue = context.payload.issue;
             if (!issue) return;
 
             if ((issue.title || '').trim() !== '[文件上传请求]') {
               return;
+            }
+
+            const allowedHosts = new Set([
+              'user-images.githubusercontent.com',
+              'github.com',
+              'githubusercontent.com'
+            ]);
+
+            function safeText(s, maxLen = 2000) {
+              return String(s ?? '')
+                .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
+                .trim()
+                .slice(0, maxLen);
+            }
+
+            function safeHttpUrl(raw) {
+              const s = safeText(raw, 4000);
+              try {
+                const u = new URL(s);
+                if (!['http:', 'https:'].includes(u.protocol)) return '';
+                const host = u.hostname.toLowerCase();
+                if (host === 'localhost' || host.endsWith('.localhost')) return '';
+                if (/^\d{1,3}(\.\d{1,3}){3}$/.test(host)) {
+                  const parts = host.split('.').map(n => Number(n));
+                  if (
+                    parts.some(n => Number.isNaN(n) || n < 0 || n > 255) ||
+                    parts[0] === 10 ||
+                    parts[0] === 127 ||
+                    (parts[0] === 192 && parts[1] === 168) ||
+                    (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) ||
+                    (parts[0] === 169 && parts[1] === 254)
+                  ) {
+                    return '';
+                  }
+                }
+                return u.toString();
+              } catch {
+                return '';
+              }
+            }
+
+            function dedupe(arr) {
+              return [...new Set(arr)];
+            }
+
+            function displayName(u) {
+              try {
+                const p = new URL(u).pathname.split('/').filter(Boolean);
+                const last = p[p.length - 1];
+                if (/^[0-9a-f-]{36}$/i.test(last)) {
+                  return 'GitHub 附件';
+                }
+                return decodeURIComponent(last || 'GitHub 附件');
+              } catch {
+                return 'GitHub 附件';
+              }
+            }
+
+            async function upsertJsonFile(path, dataObj) {
+              const content = Buffer.from(JSON.stringify(dataObj, null, 2) + '\n', 'utf8').toString('base64');
+              let sha = undefined;
+              try {
+                const existing = await github.rest.repos.getContent({ owner, repo, path });
+                if (Array.isArray(existing.data)) {
+                  throw new Error(`Target path is a directory: ${path}`);
+                }
+                sha = existing.data.sha;
+              } catch (err) {
+                if (err.status !== 404) throw err;
+              }
+
+              await github.rest.repos.createOrUpdateFileContents({
+                owner,
+                repo,
+                path,
+                message: `chore: update upload json for issue #${issue.number}`,
+                content,
+                sha
+              });
             }
 
             const body = issue.body || '';
@@ -39,44 +125,50 @@ jobs:
               urls.add(m[1]);
             }
 
-            // 只允许 GitHub 上传附件
-            const fileUrls = [...urls]
-              .map(u => u.trim().replace(/[)"'>]+$/, '')) // 清理尾部脏字符
-              .filter(u =>
-                u.includes('user-images.githubusercontent.com') ||
-                u.includes('github.com/user-attachments/assets') ||
-                u.includes('/files/')
-              );
+            const fileUrls = dedupe([...urls])
+              .map(u => u.trim().replace(/[)"'>]+$/, ''))
+              .map(u => safeHttpUrl(u))
+              .filter(Boolean)
+              .filter(u => {
+                try {
+                  const host = new URL(u).hostname.toLowerCase();
+                  return allowedHosts.has(host) || host.endsWith('.githubusercontent.com');
+                } catch {
+                  return false;
+                }
+              })
+              .slice(0, 20);
 
             if (fileUrls.length === 0) {
               await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
+                owner,
+                repo,
                 issue_number: issue.number,
                 body: '❌ 未检测到任何 GitHub 上传的附件，请直接拖拽或粘贴文件到 Issue 编辑器中。'
               });
               return;
             }
 
-            function displayName(u) {
-              try {
-                const p = new URL(u).pathname.split('/').filter(Boolean);
-                const last = p[p.length - 1];
-                // 如果是 user-attachments 的 UUID，用通用名称
-                if (/^[0-9a-f-]{36}$/i.test(last)) {
-                  return 'GitHub 附件';
-                }
-                return decodeURIComponent(last);
-              } catch {
-                return 'GitHub 附件';
-              }
-            }
+            const files = fileUrls.map(u => ({
+              url: u,
+              name: displayName(u),
+              host: new URL(u).hostname.toLowerCase()
+            }));
 
-            const owner = context.repo.owner;
-            const lines = fileUrls.map(u => `- [${displayName(u)}](${u})`);
+            const submission = {
+              schema: 'file-upload/v2',
+              issueNumber: issue.number,
+              files,
+              processedAt: new Date().toISOString()
+            };
+
+            const repoPath = `data/uploads/issue-${issue.number}.json`;
+            await upsertJsonFile(repoPath, submission);
+
+            const lines = files.map(f => `- [${f.name}](${f.url})`);
 
             const comment = [
-              `文件上传请求已收到 @${owner}，点击下载文件：`,
+              `文件上传请求已收到 @${owner}，已安全提交到仓库：\`${repoPath}\``,
               '',
               ...lines,
               '',
