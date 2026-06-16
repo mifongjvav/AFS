@@ -318,17 +318,5 @@
       "动画",
       "过审"
     ]
-  },
-  {
-    "title": "123123",
-    "icon": "fas fa-file",
-    "description": "<p>原作者：123</p><p>123</p>",
-    "url": "https://example.com",
-    "linkText": "123",
-    "type": "copy",
-    "class": [
-      "123",
-      "待定"
-    ]
   }
 ]
