@@ -1,4 +1,4 @@
-name: Submit To AFS
+name: Issue To AFS
 
 on:
   issues:
@@ -14,10 +14,12 @@ concurrency:
 
 jobs:
   submit:
+    if: contains(github.event.issue.body, '[提交请求]') && contains(github.event.issue.body, '[END]')
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -29,24 +31,30 @@ jobs:
           script: |
             const body = context.payload.issue.body || "";
 
-            function get(name){
-              const m = body.match(
-                new RegExp(`### ${name}[\\r\\n]+([\\s\\S]*?)(?=\\n### |$)`)
-              );
-              return m ? m[1].trim() : "";
+            if (!body.includes("[提交请求]")) {
+              throw new Error("不是提交请求");
+            }
+            if (!body.includes("[END]")) {
+              throw new Error("提交格式缺少 [END]");
+            }
+
+            function getField(label) {
+              const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+              const re = new RegExp("^" + escaped + "\\s*[：:]\\s*(.*)$", "m");
+              const match = body.match(re);
+              return match ? match[1].trim() : "";
             }
 
             const data = {
-              title: get("标题"),
-              icon: get("图标"),
-              description: get("描述"),
-              link: get("链接"),
-              linkText: get("按钮文字"),
-              type: get("类型"),
-              class: get("分类")
-                .split(",")
-                .map(x=>x.trim())
-                .filter(Boolean)
+              title: getField("标题"),
+              icon: getField("FontAwesome icon（留空为默认，格式为fas fa-图标名称）"),
+              author: getField("作者"),
+              description: getField("简介"),
+              link: getField("链接地址"),
+              type: getField("获取方式（jump | copy | download）"),
+              linkText: getField("获取按钮昵称"),
+              tags: getField("标签（多个标签用英文逗号分隔）"),
+              status: getField("状态（制作中 | 待定）")
             };
 
             return JSON.stringify(data);
@@ -58,67 +66,145 @@ jobs:
         with:
           script: |
             const fs = require("fs");
+            const path = require("path");
 
-            const data = JSON.parse(process.env.DATA);
+            const data = JSON.parse(process.env.DATA || "{}");
+            const file = path.join(process.cwd(), "AFS.json");
 
-            if (!data.title)
-              throw new Error("标题不能为空");
-
-            const allowedTypes = [
-              "jump",
-              "copy",
-              "download"
-            ];
-
-            if (!allowedTypes.includes(data.type))
-              throw new Error("非法类型");
-
-            if (
-              !/^https?:\/\//i.test(data.link)
-            ){
-              throw new Error("非法链接");
+            function cleanText(value) {
+              return String(value ?? "")
+                .replace(/\u0000/g, "")
+                .trim();
             }
 
-            const file = "AFS.json";
+            function escapeHtml(value) {
+              return cleanText(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+            }
+
+            function normalizeIcon(value) {
+              const icon = cleanText(value);
+              if (!icon) return "fas fa-file";
+              if (!/^fas fa-[a-z0-9-]+$/i.test(icon)) {
+                throw new Error("非法 FontAwesome 图标");
+              }
+              return icon;
+            }
+
+            function normalizeUrl(value) {
+              const url = cleanText(value);
+              let parsed;
+              try {
+                parsed = new URL(url);
+              } catch {
+                throw new Error("链接格式错误");
+              }
+              if (!["http:", "https:"].includes(parsed.protocol)) {
+                throw new Error("链接必须是 http/https");
+              }
+              return parsed.toString();
+            }
+
+            function normalizeType(value) {
+              const type = cleanText(value);
+              const allowed = ["jump", "copy", "download"];
+              if (!allowed.includes(type)) {
+                throw new Error("非法获取方式");
+              }
+              return type;
+            }
+
+            function normalizeStatus(value) {
+              const status = cleanText(value);
+              const allowed = ["制作中", "待定", "上架", "过审"];
+              if (!status) return "";
+              if (!allowed.includes(status)) {
+                throw new Error("非法状态");
+              }
+              return status;
+            }
+
+            function parseTags(value) {
+              return cleanText(value)
+                .split(",")
+                .map(v => cleanText(v))
+                .filter(Boolean);
+            }
+
+            if (!cleanText(data.title)) throw new Error("标题不能为空");
+            if (!cleanText(data.author)) throw new Error("作者不能为空");
+            if (!cleanText(data.description)) throw new Error("简介不能为空");
+
+            const item = {
+              title: cleanText(data.title),
+              icon: normalizeIcon(data.icon),
+              description:
+                `<p>原作者：${escapeHtml(data.author)}</p>` +
+                `<p>${escapeHtml(data.description)}</p>`,
+              link: normalizeUrl(data.link),
+              linkText: cleanText(data.linkText) || "获取资源",
+              type: normalizeType(data.type),
+              class: [
+                ...parseTags(data.tags),
+                normalizeStatus(data.status)
+              ].filter(Boolean)
+            };
 
             let afs = [];
-
             if (fs.existsSync(file)) {
-              afs = JSON.parse(
-                fs.readFileSync(file, "utf8")
-              );
+              const raw = fs.readFileSync(file, "utf8").trim();
+              if (raw) {
+                try {
+                  afs = JSON.parse(raw);
+                } catch {
+                  throw new Error("AFS.json 不是合法 JSON");
+                }
+              }
             }
 
-            afs.push({
-              title: data.title,
-              icon: data.icon,
-              description: data.description,
-              link: data.link,
-              linkText: data.linkText,
-              type: data.type,
-              class: data.class
-            });
+            if (!Array.isArray(afs)) {
+              throw new Error("AFS.json 顶层必须是数组");
+            }
 
-            fs.writeFileSync(
-              file,
-              JSON.stringify(afs, null, 2),
-              "utf8"
+            const dup = afs.some(x =>
+              x &&
+              typeof x === "object" &&
+              cleanText(x.title) === item.title &&
+              cleanText(x.link) === item.link
             );
 
-      - name: Commit
+            if (dup) {
+              throw new Error("已存在相同标题和链接的条目");
+            }
+
+            afs.push(item);
+
+            fs.writeFileSync(file, JSON.stringify(afs, null, 2) + "\n", "utf8");
+
+      - name: Rebase Before Push
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email \
-            "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin "${{ github.event.repository.default_branch }}"
 
+      - name: Commit Changes
+        run: |
           git add AFS.json
 
-          git diff --cached --quiet && exit 0
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
 
           git commit -m "Add item from issue #${{ github.event.issue.number }}"
-          git push
+          git push origin HEAD:${{ github.event.repository.default_branch }}
 
-      - name: Comment
+      - name: Success Comment
+        if: success()
         uses: actions/github-script@v8
         with:
           script: |
@@ -126,10 +212,11 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: "✅ 已成功添加到 AFS.json"
+              body: "✅ 已成功写入根目录 AFS.json 并提交。"
             });
 
       - name: Close Issue
+        if: success()
         uses: actions/github-script@v8
         with:
           script: |
@@ -138,4 +225,16 @@ jobs:
               repo: context.repo.repo,
               issue_number: context.issue.number,
               state: "closed"
+            });
+
+      - name: Failure Comment
+        if: failure()
+        uses: actions/github-script@v8
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: "❌ 提交失败，请检查字段格式后重新提交。"
             });
