@@ -1,0 +1,12 @@
+{
+  "schema": "file-upload/v2",
+  "issueNumber": 15,
+  "files": [
+    {
+      "url": "https://github.com/user-attachments/assets/d324c5e5-3100-416a-9f8d-a19761edd841",
+      "name": "GitHub 附件",
+      "host": "github.com"
+    }
+  ],
+  "processedAt": "2026-06-16T02:34:56.001Z"
+}
