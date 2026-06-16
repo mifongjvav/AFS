@@ -31,11 +31,9 @@ jobs:
             // helper: normalize a key name by removing parenthetical hints and trimming
             function normalizeKey(k) {
               if (!k) return '';
-              // replace full-width （ ） and half-width ( )
-              // remove any content inside parentheses, then trim
               return k.replace(/（.*?）/g, '')
                       .replace(/\(.*?\)/g, '')
-                      .replace(/\u3000/g, ' ') // full-width space -> normal space
+                      .replace(/\u3000/g, ' ')
                       .trim();
             }
 
@@ -46,7 +44,6 @@ jobs:
                 .map(l => l.trim())
                 .filter(Boolean)
                 .forEach(line => {
-                  // find first colon (Chinese or English)
                   let i = line.indexOf('：');
                   if (i === -1) i = line.indexOf(':');
                   if (i > -1) {
@@ -105,7 +102,7 @@ jobs:
             }
 
             /* ===============================
-               Issue 事件：解析 + 校验 + JSON + 更新 AFS.json
+               Issue 事件：解析 + 校验 + JSON + 更新 AFS.json + 关闭 issue
             =============================== */
             const issue = context.payload.issue;
             const issueNumber = issue.number;
@@ -210,7 +207,6 @@ jobs:
                 .forEach(t => classes.push(t));
             }
 
-            // 最后追加状态（唯一来源）
             classes.push(status);
 
             const result = {
@@ -229,13 +225,11 @@ jobs:
             let currentSha = null;
 
             try {
-              // 尝试获取现有文件
               const getResp = await github.rest.repos.getContent({
                 owner,
                 repo,
                 path: afsPath
               });
-              // 文件存在
               const contentBase64 = getResp.data.content;
               const contentStr = Buffer.from(contentBase64, 'base64').toString('utf-8');
               existingItems = JSON.parse(contentStr);
@@ -245,7 +239,6 @@ jobs:
               currentSha = getResp.data.sha;
             } catch (err) {
               if (err.status === 404) {
-                // 文件不存在，视为空数组
                 existingItems = [];
                 currentSha = null;
               } else {
@@ -253,7 +246,6 @@ jobs:
               }
             }
 
-            // 根据 url 去重：若已存在则替换，否则追加
             const existingIndex = existingItems.findIndex(item => item.url === result.url);
             if (existingIndex !== -1) {
               existingItems[existingIndex] = result;
@@ -273,7 +265,7 @@ jobs:
               path: afsPath,
               message: commitMsg,
               content: newContentBase64,
-              sha: currentSha  // 若为 null，则会新建文件
+              sha: currentSha
             });
 
             // ========== 清理 issue labels 中的黑名单项 ==========
@@ -299,4 +291,12 @@ jobs:
                 JSON.stringify(result, null, 2),
                 '```'
               ].join('\n')
+            });
+
+            // ========== 关闭 issue ==========
+            await github.rest.issues.update({
+              owner,
+              repo,
+              issue_number: issueNumber,
+              state: 'closed'
             });
