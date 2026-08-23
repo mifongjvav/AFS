@@ -321,7 +321,7 @@
   },
   {
     "title": "[QRC] 二维码生成",
-    "icon": "qrcode",
+    "icon": "fas fa-qrcode",
     "description": "<p>原作者：柠檬酸鲨鱼</p><p>目前支持V1版本纠错Q的数字、字符模式，存在一些问题</p>",
     "url": "https://kn.codemao.cn/editor/?workId=327193414",
     "linkText": "查看",
